@@ -1,19 +1,24 @@
 package org.example.Model;
 
-
-
 public class Address {
-    private int addressId;
+    private String addressId;
     private String addressLine1;
     private String city;
     private String state;
     private String zipCode;
     private String country;
 
-    public Address() {
+    // ✅ Constructor without ID (for inserting a new address)
+    public Address(String addressLine1, String city, String state, String zipCode, String country) {
+        this.addressLine1 = addressLine1;
+        this.city = city;
+        this.state = state;
+        this.zipCode = zipCode;
+        this.country = country;
     }
 
-    public Address(int addressId, String addressLine1, String city, String state, String zipCode, String country) {
+    // ✅ Full constructor with ID (optional - useful for retrieving from DB)
+    public Address(String addressId, String addressLine1, String city, String state, String zipCode, String country) {
         this.addressId = addressId;
         this.addressLine1 = addressLine1;
         this.city = city;
@@ -22,11 +27,12 @@ public class Address {
         this.country = country;
     }
 
-    public int getAddressId() {
+    // Getters and setters...
+    public String getAddressId() {
         return addressId;
     }
 
-    public void setAddressId(int addressId) {
+    public void setAddressId(String addressId) {
         this.addressId = addressId;
     }
 
