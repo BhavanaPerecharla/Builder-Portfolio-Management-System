@@ -21,9 +21,9 @@ public class AddressEditor {
             System.out.println("[5] Edit Country");
             System.out.println("[0] Done Editing Address");
             System.out.print("👉 Choose field to edit: ");
-            String addrChoice = sc.nextLine().trim();
+            String addChoice = sc.nextLine().trim();
 
-            switch (addrChoice) {
+            switch (addChoice) {
                 case "1":
                     address.setAddressLine1(promptNonEmpty(sc, "Enter Address Line 1"));
                     break;

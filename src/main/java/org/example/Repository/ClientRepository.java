@@ -15,26 +15,44 @@ public class ClientRepository {
     private static final Logger logger = Logger.getLogger(ClientRepository.class.getName());
 
     // Insert Client (Address should already exist)
-    public void insertClient(Client client) {
-        String sql = "INSERT INTO client (client_Name, client_Email, client_Password, client_Contact, client_type, address_id) VALUES (?, ?, ?, ?, ?, ?)";
+    public void insertClient(Client client, Address address) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try {
+            conn = DBConnection.getConnection();
+            conn.setAutoCommit(false);
+
+            String addressId = AddressRepository.insertAddress(address);  // ✅ Insert address via AddressRepository
+
+            String sql = "INSERT INTO client (client_Name, client_Email, client_Password, client_Contact, client_type, address_id) VALUES (?, ?, ?, ?, ?, ?)";
+            stmt = conn.prepareStatement(sql);
 
             stmt.setString(1, client.getClientName());
             stmt.setString(2, client.getClientEmail());
             stmt.setString(3, client.getClientPassword());
             stmt.setString(4, client.getClientContact());
             stmt.setString(5, client.getClientType());
-            stmt.setString(6, client.getAddressId());
+            stmt.setString(6, addressId);
 
             stmt.executeUpdate();
+            conn.commit();
+
             logger.info("Client inserted successfully.");
 
         } catch (SQLException e) {
+            try {
+                if (conn != null) conn.rollback();
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
             logger.log(Level.SEVERE, "Error inserting client", e);
+        } finally {
+            DBConnection.closeStatement(stmt);
+            DBConnection.closeConnection(conn);
         }
     }
+
 
     // Get Client By Email
     public static Client getClientByEmail(String email) {
@@ -100,7 +118,6 @@ public class ClientRepository {
         return clients;
     }
 
-    // Update Client and Address (Transactional)
     public static boolean updateClient(Client client, Address address) {
         Connection conn = null;
         PreparedStatement updateClientStmt = null;
@@ -108,11 +125,11 @@ public class ClientRepository {
 
         try {
             conn = DBConnection.getConnection();
-            conn.setAutoCommit(false); // Start transaction
+            conn.setAutoCommit(false);
 
             // Update client
-            String clientSQL = "UPDATE client SET client_Name = ?, client_Email = ?, client_Password = ?, client_Contact = ?, client_type = ? WHERE client_Id = ?";
-            updateClientStmt = conn.prepareStatement(clientSQL);
+            String sql = "UPDATE client SET client_Name = ?, client_Email = ?, client_Password = ?, client_Contact = ?, client_type = ? WHERE client_Id = ?";
+            updateClientStmt = conn.prepareStatement(sql);
 
             updateClientStmt.setString(1, client.getClientName());
             updateClientStmt.setString(2, client.getClientEmail());
@@ -123,10 +140,9 @@ public class ClientRepository {
 
             int clientRows = updateClientStmt.executeUpdate();
 
-            // Update address
-            AddressRepository.updateAddress(address);
+            boolean addressUpdated = AddressRepository.updateAddress(address);  // ✅ Address updated via AddressRepository
 
-            if (clientRows > 0) {
+            if (clientRows > 0 && addressUpdated) {
                 conn.commit();
                 success = true;
             } else {
@@ -147,6 +163,7 @@ public class ClientRepository {
 
         return success;
     }
+
 
     // Update Password Only
     public static boolean updatePassword(String email, String hashedPassword) {

@@ -6,7 +6,7 @@ public class PasswordUtil {
 
     // Hash password using BCrypt
     public static String hashPassword(String plainPassword) {
-        return BCrypt.hashpw(plainPassword, BCrypt.gensalt(12)); // 12 is the work factor
+        return BCrypt.hashpw(plainPassword, BCrypt.gensalt(12));
     }
 
     // Verify password against stored hash

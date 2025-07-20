@@ -1,37 +1,37 @@
 package org.example.Service;
-import static org.example.Util.InputValidator.promptNonEmpty;
-import static org.example.Util.InputValidator.promptValidContact;
-import org.example.Model.Client;
+
+import org.example.Model.Admin;
 import org.example.Model.Address;
-import org.example.Repository.ClientRepository;
+import org.example.Repository.AdminRepository;
 import org.example.Repository.AddressRepository;
+
 import org.example.Util.AddressEditor;
 import org.example.Util.PasswordManager;
-import org.example.Util.PasswordUtil;
 
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static org.example.Util.InputValidator.promptNonEmpty;
+import static org.example.Util.InputValidator.promptValidContact;
 
-public class ClientService {
-    private static final Logger logger = Logger.getLogger(ClientService.class.getName());
+public class AdminService {
+    private static final Logger logger = Logger.getLogger(AdminService.class.getName());
 
     public static void viewProfile(String email) {
         try {
-            Client client = ClientRepository.getClientByEmail(email);
-            if (client == null) {
-                System.out.println("❌ Client not found.");
+            Admin admin = AdminRepository.getAdminByEmail(email);
+            if (admin == null) {
+                System.out.println("❌ Admin not found.");
                 return;
             }
 
-            Address address = AddressRepository.getAddressById(client.getAddressId());
+            Address address = AddressRepository.getAddressById(admin.getAddressId());
 
-            System.out.println("\n👤===== Client Profile =====");
-            System.out.println("🔹 Name: " + client.getClientName());
-            System.out.println("🔹 Email: " + client.getClientEmail());
-            System.out.println("🔹 Contact: " + client.getClientContact());
-            System.out.println("🔹 Type: " + client.getClientType());
+            System.out.println("\n👤===== Admin Profile =====");
+            System.out.println("🔹 Name: " + admin.getAdminName());
+            System.out.println("🔹 Email: " + admin.getAdminEmail());
+            System.out.println("🔹 Contact: " + admin.getAdminContact());
 
             if (address != null) {
                 System.out.println("🏠 Address:");
@@ -44,7 +44,7 @@ public class ClientService {
                 System.out.println("⚠️ Address not found.");
             }
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error viewing client profile", e);
+            logger.log(Level.SEVERE, "Error viewing admin profile", e);
         }
     }
 
@@ -52,45 +52,44 @@ public class ClientService {
         Scanner sc = new Scanner(System.in);
 
         try {
-            Client client = ClientRepository.getClientByEmail(email);
-            if (client == null) {
-                System.out.println("❌ Client not found.");
+            Admin admin = AdminRepository.getAdminByEmail(email);
+            if (admin == null) {
+                System.out.println("❌ Admin not found.");
                 return;
             }
 
-            Address address = AddressRepository.getAddressById(client.getAddressId());
+            Address address = AddressRepository.getAddressById(admin.getAddressId());
             if (address == null) {
                 address = new Address();
-                address.setAddressId(client.getAddressId());
+                address.setAddressId(admin.getAddressId());
             }
 
             while (true) {
                 System.out.println("\n🛠️===== Edit Profile =====");
                 System.out.println("[1] Edit Name");
                 System.out.println("[2] Edit Contact");
-                System.out.println("[3] Edit Client Type");
-                System.out.println("[4] Edit Address");
+                System.out.println("[3] Edit Address");
                 System.out.println("[0] Back to Dashboard");
                 System.out.print("👉 Enter your choice: ");
                 String choice = sc.nextLine().trim();
 
                 switch (choice) {
                     case "1":
-                        client.setClientName(promptNonEmpty(sc, "Enter new name"));
+                        admin.setAdminName(promptNonEmpty(sc, "Enter new name"));
                         break;
                     case "2":
-                        client.setClientContact(promptValidContact(sc, "Enter new contact number"));
+                        admin.setAdminContact(promptValidContact(sc, "Enter new contact number"));
                         break;
                     case "3":
-                        client.setClientType(promptNonEmpty(sc, "Enter client type"));
-                        break;
-                    case "4":
                         AddressEditor.editAddress(sc, address);
                         break;
-
                     case "0":
-                        ClientRepository.updateClient(client, address);
-                        System.out.println("✅ Profile updated successfully!");
+                        boolean updated = AdminRepository.updateAdmin(admin, address);
+                        if (updated) {
+                            System.out.println("✅ Profile updated successfully!");
+                        } else {
+                            System.out.println("❌ Failed to update profile.");
+                        }
                         return;
                     default:
                         System.out.println("❌ Invalid choice.");
@@ -98,29 +97,26 @@ public class ClientService {
             }
 
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error editing client profile", e);
+            logger.log(Level.SEVERE, "Error editing admin profile", e);
         }
     }
-
-
-
 
     public static void changePassword(String email) {
         Scanner sc = new Scanner(System.in);
 
         try {
-            Client client = ClientRepository.getClientByEmail(email);
-            if (client == null) {
-                System.out.println("❌ Client not found.");
+            Admin admin = AdminRepository.getAdminByEmail(email);
+            if (admin == null) {
+                System.out.println("❌ Admin not found.");
                 return;
             }
 
-            String hashedNewPassword = PasswordManager.handlePasswordChange(sc, client.getClientPassword());
+            String hashedNewPassword = PasswordManager.handlePasswordChange(sc, admin.getAdminPassword());
 
             if (hashedNewPassword != null) {
-                client.setClientPassword(hashedNewPassword);
+                admin.setAdminPassword(hashedNewPassword);
 
-                boolean updated = ClientRepository.updatePassword(email, hashedNewPassword);
+                boolean updated = AdminRepository.updatePassword(email, hashedNewPassword);
                 if (updated) {
                     System.out.println("✅ Password changed successfully.");
                 } else {
@@ -129,9 +125,7 @@ public class ClientService {
             }
 
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error changing password", e);
+            logger.log(Level.SEVERE, "Error changing admin password", e);
         }
     }
-
-
 }

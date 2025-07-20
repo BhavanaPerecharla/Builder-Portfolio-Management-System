@@ -19,12 +19,11 @@ public class AddressRepository {
 
     private static final Logger logger = Logger.getLogger(AddressRepository.class.getName());
 
-    // CREATE
-    public void insertAddress(Address address) {
-        String sql = "INSERT INTO address (address_Line1, city, states, zip_Code, country) VALUES (?, ?, ?, ?, ?)";
+    public static String insertAddress(Address address) throws SQLException {
+        String sql = "INSERT INTO address (addressLine, city, states, zipCode, country) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, address.getAddressLine1());
             stmt.setString(2, address.getCity());
@@ -33,13 +32,15 @@ public class AddressRepository {
             stmt.setString(5, address.getCountry());
 
             stmt.executeUpdate();
-            logger.info("Address inserted successfully.");
 
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error inserting address", e);
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                return rs.getString(1);  // return generated address_id
+            } else {
+                throw new SQLException("Address insertion failed.");
+            }
         }
     }
-
     // READ - By ID
     public static Address getAddressById(String addressId) {
         String sql = "SELECT * FROM address WHERE address_Id = ?";
@@ -97,7 +98,7 @@ public class AddressRepository {
     }
 
     // UPDATE
-    public static void updateAddress(Address address) {
+    public static boolean updateAddress(Address address){
         String sql = "UPDATE address SET address_Line1 = ?, city = ?, states = ?, zip_Code = ?, country = ? WHERE address_Id = ?";
 
         try (Connection conn = DBConnection.getConnection();
@@ -111,15 +112,17 @@ public class AddressRepository {
             stmt.setString(6, address.getAddressId());
 
             stmt.executeUpdate();
-            logger.info("Address updated successfully.");
+            return stmt.executeUpdate() > 0;
 
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error updating address", e);
+        }
+        catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error updating address (ID: " + address.getAddressId() + ")", e);
+            return false;
         }
     }
 
     // DELETE
-    public void deleteAddress(String addressId) {
+    public static void deleteAddress(String addressId) {
         String sql = "DELETE FROM address WHERE address_Id = ?";
 
         try (Connection conn = DBConnection.getConnection();

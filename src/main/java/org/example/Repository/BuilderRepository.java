@@ -3,8 +3,6 @@ package org.example.Repository;
 import org.example.Model.Builder;
 import org.example.Util.DBConnection;
 import org.example.Model.Address;
-import org.example.Util.PasswordUtil;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,36 +14,21 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
+
 public class BuilderRepository {
     private static final Logger logger = Logger.getLogger(BuilderRepository.class.getName());
     // INSERT Builder with Address
     public void insertBuilder(Builder builder, Address address) {
-        String insertAddressQuery = "INSERT INTO address (addressLine, city, states, zipCode, country) VALUES (?, ?, ?, ?, ?)";
         String insertBuilderQuery = "INSERT INTO builder (name, email, password, contact, address_id) VALUES (?, ?, ?, ?, ?)";
 
         Connection connection = null;
-        PreparedStatement addressStmt = null;
         PreparedStatement builderStmt = null;
-        ResultSet generatedKeys = null;
 
         try {
             connection = DBConnection.getConnection();
             connection.setAutoCommit(false);
 
-            addressStmt = connection.prepareStatement(insertAddressQuery, Statement.RETURN_GENERATED_KEYS);
-            addressStmt.setString(1, address.getAddressLine1());
-            addressStmt.setString(2, address.getCity());
-            addressStmt.setString(3, address.getStates());
-            addressStmt.setString(4, address.getZipCode());
-            addressStmt.setString(5, address.getCountry());
-
-            addressStmt.executeUpdate();
-            generatedKeys = addressStmt.getGeneratedKeys();
-
-            String addressId = null;
-            if (generatedKeys.next()) {
-                addressId = generatedKeys.getString(1);
-            }
+            String addressId = AddressRepository.insertAddress(address);
 
             builderStmt = connection.prepareStatement(insertBuilderQuery);
             builderStmt.setString(1, builder.getBuilderName());
@@ -59,13 +42,17 @@ public class BuilderRepository {
 
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error inserting builder", e);
+            try {
+                if (connection != null) connection.rollback();
+            } catch (SQLException ex) {
+                logger.log(Level.SEVERE, "Rollback failed", ex);
+            }
         } finally {
-            DBConnection.closeResultSet(generatedKeys);
-            DBConnection.closeStatement(addressStmt);
             DBConnection.closeStatement(builderStmt);
             DBConnection.closeConnection(connection);
         }
     }
+
 
     // GET Builder by ID
     public static Builder getBuilderById(String builderId) {

@@ -3,9 +3,7 @@ package org.example.UI;
 import java.util.Scanner;
 
 import org.example.Service.LoginService;
-import org.example.UI.RegisterUI;
-import org.example.Util.DBConnection;
-import org.example.UI.LoginUI;
+
 
 public class LoginUI {
 
@@ -53,19 +51,22 @@ public class LoginUI {
 
         String email = "";
         int emailAttempts = 3;
-        while (emailAttempts-- > 0) {
+
+        while (emailAttempts > 0) {
             System.out.print("Enter Email: ");
             email = sc.nextLine().trim();
 
             if (LoginService.emailExists(email, role)) {
-                break;
+                break;  // ✅ Found email, exit loop
             } else {
+                emailAttempts--;  // ❌ Failed attempt, reduce count
                 System.out.println("❌ Email not found for role: " + role.toUpperCase());
+
                 if (emailAttempts > 0) {
                     System.out.println("🔁 Please try again. Attempts left: " + emailAttempts);
                 } else {
                     System.out.println("❌ Too many failed attempts. Returning to main menu.");
-                    return;
+                    return;  // ✅ Exit after exhausting attempts
                 }
             }
         }
