@@ -219,7 +219,7 @@ public class ProjectService {
 
         List<Project> projects = ProjectRepository.getProjectsByClientId(clientId);
 
-        if (projects == null || projects.isEmpty()) {
+        if (projects.isEmpty()) {
             System.out.println("❌ No projects found for your account.");
             return;
         }
@@ -246,6 +246,54 @@ public class ProjectService {
     }
 
 
+    public static void viewProjectsByManagerEmail(String managerEmail) {
+        String managerId = ManagerRepository.getManagerIdByEmail(managerEmail);
+
+        if (managerId == null) {
+            System.out.println("❌ Manager not found. Cannot fetch projects.");
+            return;
+        }
+
+        List<Project> projects = ProjectRepository.getProjectsByManagerId(managerId);
+
+        if (projects.isEmpty()) {
+            System.out.println("❌ No projects assigned to you.");
+            return;
+        }
+
+        displayProjectsByCategory(projects, "Upcoming");
+        displayProjectsByCategory(projects, "In Progress");
+        displayProjectsByCategory(projects, "Completed");
+    }
+
+    private static void displayProjectsByCategory(List<Project> projects, String statusCategory) {
+        System.out.println("\n📋===== " + statusCategory.toUpperCase() + " PROJECTS =====");
+
+        boolean found = false;
+
+        for (Project project : projects) {
+            if (statusCategory.equalsIgnoreCase(project.getProjectStatus())) {
+                found = true;
+                System.out.println("------------------------------------------------------------");
+                System.out.println("🆔 Project ID           : " + project.getProjectId());
+                System.out.println("📌 Project Name         : " + project.getProjectName());
+                System.out.println("📝 Description          : " + (project.getProjectDescription() != null ? project.getProjectDescription() : "-"));
+                System.out.println("📅 Start Date           : " + project.getProjectStartDate());
+                System.out.println("📅 Estimated Completion : " + (project.getProjectEstCompleteDate() != null ? project.getProjectEstCompleteDate() : "-"));
+                System.out.println("📅 Actual Completion    : " + (project.getProjectActualCompleteDate() != null ? project.getProjectActualCompleteDate() : "-"));
+                System.out.println("📊 Status               : " + project.getProjectStatus());
+                System.out.println("👤 Manager ID           : " + project.getManagerId());
+                System.out.println("🤝 Client ID            : " + project.getClientId());
+                System.out.println("🏗️ Builder ID          : " + project.getBuilderId());
+                System.out.println("💰 Estimated Cost       : ₹" + project.getEstimatedCost());
+                System.out.println("------------------------------------------------------------\n");
+            }
+        }
+
+        if (!found) {
+            System.out.println("❌ No " + statusCategory.toLowerCase() + " projects found.\n");
+        }
+    }
 
 
     private static void showProjectDetails(Project project) {

@@ -32,9 +32,10 @@ public class ProjectRepository {
                 }
             }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
+        }catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error fetching projects by builder email: " + builderEmail, e);
         }
+
 
         return projects;
     }
@@ -62,7 +63,7 @@ public class ProjectRepository {
             return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error inserting project ID: " + project.getProjectId(), e);
             return false;
         }
     }
@@ -113,7 +114,7 @@ public class ProjectRepository {
             return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error updating status for project ID: " + projectId, e);
             return false;
         }
     }
@@ -129,7 +130,7 @@ public class ProjectRepository {
             return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error deleting project with ID: " + projectId, e);
             return false;
         }
     }
@@ -149,7 +150,7 @@ public class ProjectRepository {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error fetching project count for builder ID: " + builderId, e);
         }
 
         return 1;  // Default to PRJ001 if no projects found
@@ -178,7 +179,7 @@ public class ProjectRepository {
                 return project;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error fetching project by ID: " + projectId, e);
         }
         return null;
     }
@@ -207,11 +208,49 @@ public class ProjectRepository {
             return rowsAffected > 0;  // If update is successful
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error updating project with ID: " + project.getProjectId(), e);
         }
 
         return false;  // If update fails
     }
+    // In ProjectRepository.java
+
+    public static List<Project> getProjectsByManagerId(String managerId) {
+        List<Project> projects = new ArrayList<>();
+
+        String sql = "SELECT * FROM project WHERE manager_Id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, managerId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Project project = new Project();
+
+                project.setProjectId(rs.getString("project_Id"));
+                project.setProjectName(rs.getString("project_Name"));
+                project.setProjectDescription(rs.getString("project_Description"));
+                project.setProjectStartDate(rs.getDate("project_Start_Date"));
+                project.setProjectEstCompleteDate(rs.getDate("project_Est_Complete_Date"));
+                project.setProjectActualCompleteDate(rs.getDate("project_Actual_Complete_Date"));
+                project.setProjectStatus(rs.getString("project_Status"));
+                project.setManagerId(rs.getString("Manager_Id"));
+                project.setClientId(rs.getString("Client_Id"));
+                project.setBuilderId(rs.getString("Builder_Id"));
+                project.setEstimatedCost(rs.getBigDecimal("estimated_Cost"));
+
+                projects.add(project);
+            }
+
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error fetching projects by manager ID", e);
+        }
+
+        return projects;
+    }
+
 
     private static Project mapProject(ResultSet rs) throws SQLException {
         Project project = new Project();

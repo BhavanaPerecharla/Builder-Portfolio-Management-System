@@ -224,6 +224,27 @@ public class ManagerRepository {
             return false;
         }
     }
+    // In ManagerRepository.java
+
+    public static String getManagerIdByEmail(String email) {
+        String sql = "SELECT manager_Id FROM manager WHERE manager_Email = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, email);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getString("manager_Id");
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error fetching manager ID by email", e);
+        }
+
+        return null;
+    }
+
 
     public static boolean updateManagerStatus(Manager manager) {
         String sql = "UPDATE manager SET pm_status = ? WHERE manager_id = ?";

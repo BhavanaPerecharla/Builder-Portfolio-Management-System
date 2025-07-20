@@ -1,8 +1,8 @@
 package org.example.UI;
 
-
 import java.util.Scanner;
 import org.example.Service.ManagerService;
+import org.example.Service.ProjectService;
 
 public class ManagerDashboard {
 
@@ -14,6 +14,7 @@ public class ManagerDashboard {
             System.out.println("[1] View Profile");
             System.out.println("[2] Edit Profile");
             System.out.println("[3] Change Password");
+            System.out.println("[4] View My Projects");
             System.out.println("[0] Logout");
             System.out.print("👉 Enter your choice: ");
             String choice = sc.nextLine().trim();
@@ -29,6 +30,10 @@ public class ManagerDashboard {
 
                 case "3":
                     ManagerService.changePassword(email);
+                    break;
+
+                case "4":
+                    ProjectService.viewProjectsByManagerEmail(email);
                     break;
 
                 case "0":
