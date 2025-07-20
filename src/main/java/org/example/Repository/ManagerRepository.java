@@ -225,6 +225,25 @@ public class ManagerRepository {
         }
     }
 
+    public static boolean updateManagerStatus(Manager manager) {
+        String sql = "UPDATE manager SET pm_status = ? WHERE manager_id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, manager.getPmStatus());
+            stmt.setString(2, manager.getManagerId());
+
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+
+        } catch (Exception e) {
+            System.out.println("❌ Error updating manager status: " + e.getMessage());
+            return false;
+        }
+    }
+
+
     // GET All Managers
     public List<Manager> getAllManagers() {
         List<Manager> managers = new ArrayList<>();

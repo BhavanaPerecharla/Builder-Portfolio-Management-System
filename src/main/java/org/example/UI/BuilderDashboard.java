@@ -13,6 +13,7 @@ public class BuilderDashboard {
             System.out.println("[1] View Profile");
             System.out.println("[2] Edit Profile");
             System.out.println("[3] Change Password");
+            System.out.println("[4] Manage My Projects");   // Single menu for all project-related actions
             System.out.println("[0] Logout");
             System.out.print("👉 Enter your choice: ");
             String choice = sc.nextLine().trim();
@@ -27,7 +28,11 @@ public class BuilderDashboard {
                     break;
 
                 case "3":
-                    BuilderService.changePassword(email); // 🔐
+                    BuilderService.changePassword(email);
+                    break;
+
+                case "4":
+                    ProjectUI.manageProjects(email);   // Delegates all project tasks to ProjectUI
                     break;
 
                 case "0":

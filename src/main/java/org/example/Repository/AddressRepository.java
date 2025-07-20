@@ -99,6 +99,10 @@ public class AddressRepository {
 
     // UPDATE
     public static boolean updateAddress(Address address){
+        if (address != null) {
+            AddressRepository.updateAddress(address);
+        }
+
         String sql = "UPDATE address SET address_Line1 = ?, city = ?, states = ?, zip_Code = ?, country = ? WHERE address_Id = ?";
 
         try (Connection conn = DBConnection.getConnection();

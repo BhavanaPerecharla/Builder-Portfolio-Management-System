@@ -82,27 +82,20 @@ public class ManagerService {
                 switch (choice) {
                     case "1":
                         manager.setManagerName(promptNonEmpty(sc, "Enter new name"));
-                        if (ManagerRepository.updateManager(manager, address)) {
-                            System.out.println("✅ Profile updated successfully!");
-                        } else {
-                            System.out.println("❌ Failed to update profile.");
-                        }
+                        System.out.println("✅ Name updated successfully!");
+                        System.out.println("✅ Profile updated successfully!");
+
+
                         break;
                     case "2":
                         manager.setManagerContact(promptValidContact(sc, "Enter new contact number"));
-                        if (ManagerRepository.updateManager(manager, address)) {
-                            System.out.println("✅ Profile updated successfully!");
-                        } else {
-                            System.out.println("❌ Failed to update profile.");
-                        }
+                        System.out.println("✅ Contact updated successfully!");
+                        System.out.println("✅ Profile updated successfully!");
                         break;
                     case "3":
                         manager.setPmStatus(promptNonEmpty(sc, "Enter PM status (bench / working)"));
-                        if (ManagerRepository.updateManager(manager, address)) {
-                            System.out.println("✅ Profile updated successfully!");
-                        } else {
-                            System.out.println("❌ Failed to update profile.");
-                        }
+                        System.out.println("✅ PM status updated successfully!");
+                        System.out.println("✅ Profile updated successfully!");
                         break;
                     case "4":
                         while (true) {
@@ -119,14 +112,9 @@ public class ManagerService {
 
                     case "5":
                         AddressEditor.editAddress(sc, address);
-                        if (ManagerRepository.updateManager(manager, address)) {
-                            System.out.println("✅ Profile updated successfully!");
-                        } else {
-                            System.out.println("❌ Failed to update profile.");
-                        }
+                        System.out.println("✅ Profile updated successfully!");
                         break;
                     case "0":
-
                         boolean updated = ManagerRepository.updateManager(manager, address);
                         if (updated) {
                             System.out.println("✅ Profile updated successfully!");

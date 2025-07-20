@@ -53,6 +53,22 @@ public class BuilderRepository {
         }
     }
 
+    public static String getBuilderIdByEmail(String email) {
+        String builderId = null;
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(
+                     "SELECT builder_id FROM builder WHERE builder_Email = ?")) {
+            stmt.setString(1, email);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                builderId = rs.getString("builder_id");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return builderId;
+    }
+
 
     // GET Builder by ID
     public static Builder getBuilderById(String builderId) {
