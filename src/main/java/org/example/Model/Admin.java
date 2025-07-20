@@ -1,24 +1,23 @@
 package org.example.Model;
 
 
+// Admin Model
 public class Admin {
     private String adminId;
     private String adminName;
     private String adminEmail;
     private String adminPassword;
     private String adminContact;
-    private Address address; // composition with Address class
+    private String addressId;
 
-    public Admin() {
-    }
+    public Admin() {}
 
-    public Admin(String adminId, String adminName, String adminEmail, String adminPassword, String adminContact, Address address) {
-        this.adminId = adminId;
+    public Admin(String adminName, String adminEmail, String adminPassword, String adminContact, String addressId) {
         this.adminName = adminName;
         this.adminEmail = adminEmail;
         this.adminPassword = adminPassword;
         this.adminContact = adminContact;
-        this.address = address;
+        this.addressId = addressId;
     }
 
     public String getAdminId() {
@@ -61,11 +60,11 @@ public class Admin {
         this.adminContact = adminContact;
     }
 
-    public Address getAddress() {
-        return address;
+    public String getAddressId() {
+        return addressId;
     }
 
-    public void setAddress(Address address) {
-        this.address = address;
+    public void setAddressId(String addressId) {
+        this.addressId = addressId;
     }
 }

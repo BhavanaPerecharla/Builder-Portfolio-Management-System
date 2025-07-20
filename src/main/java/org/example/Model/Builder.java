@@ -1,16 +1,23 @@
 package org.example.Model;
-
+// Builder Model
 public class Builder {
     private String builderId;
     private String builderName;
     private String builderEmail;
     private String builderPassword;
     private String builderContact;
-    private Address address; // Composition with Address
+    private String addressId;
+    private Address address;
 
-    public Builder() {
+    public Builder() {}
+
+    public Builder(String builderName, String builderEmail, String builderPassword, String builderContact, String addressId) {
+        this.builderName = builderName;
+        this.builderEmail = builderEmail;
+        this.builderPassword = builderPassword;
+        this.builderContact = builderContact;
+        this.addressId = addressId;
     }
-
     public Builder(String builderId, String builderName, String builderEmail, String builderPassword, String builderContact, Address address) {
         this.builderId = builderId;
         this.builderName = builderName;
@@ -18,6 +25,9 @@ public class Builder {
         this.builderPassword = builderPassword;
         this.builderContact = builderContact;
         this.address = address;
+        if (address != null) {
+            this.addressId = address.getAddressId();
+        }
     }
 
     public String getBuilderId() {
@@ -60,11 +70,21 @@ public class Builder {
         this.builderContact = builderContact;
     }
 
-    public Address getAddress() {
+    public String getAddressId() {
+        return addressId;
+    }
+
+    public void setAddressId(String addressId) {
+        this.addressId = addressId;
+    }
+    public Address getAddress() { // ✅ Needed for your logic
         return address;
     }
 
     public void setAddress(Address address) {
         this.address = address;
+        if (address != null) {
+            this.addressId = address.getAddressId(); // Sync the ID
+        }
     }
 }

@@ -74,13 +74,29 @@ public class LoginUI {
         while (passwordAttempts-- > 0) {
             System.out.print("Enter Password: ");
             String password = sc.nextLine().trim();
+
             String name = LoginService.authenticate(email, password, role);
             if (name != null) {
                 System.out.println("✅ Login Successful! Welcome, " + name + " (" + role.toUpperCase() + ")");
-                return;
-            }
 
-             else {
+                switch (role.toLowerCase()) {
+                    case "admin":
+                        AdminDashboard.showDashboard(email);
+                        break;
+                    case "builder":
+                        BuilderDashboard.showDashboard(email);
+                        break;
+                    case "client":
+                        ClientDashboard.showDashboard(email);
+                        break;
+                    case "manager":
+                        ManagerDashboard.showDashboard(email);
+                        break;
+                    default:
+                        System.out.println("⚠️ Unknown role: " + role);
+                }
+                return;
+            } else {
                 System.out.println("❌ Incorrect password.");
                 if (passwordAttempts > 0) {
                     System.out.println("🔁 Try again. Attempts left: " + passwordAttempts);
@@ -89,6 +105,7 @@ public class LoginUI {
                 }
             }
         }
+
     }
 }
 

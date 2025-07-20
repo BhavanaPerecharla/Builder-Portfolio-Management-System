@@ -1,29 +1,26 @@
 package org.example.Model;
 
-import org.example.Model.Address;
+// Manager Model
 public class Manager {
     private String managerId;
     private String managerName;
     private String managerEmail;
     private String managerPassword;
     private String managerContact;
-    private String managerStatus; // free or working
-    private String builderId;     // Foreign key reference to Builder
-    private Address address;      // Composition with Address
+    private String pmStatus;
+    private String builderId;
+    private String addressId;
 
-    public Manager() {
-    }
+    public Manager() {}
 
-    public Manager(String managerId, String managerName, String managerEmail, String managerPassword,
-                   String managerContact, String managerStatus, String builderId, Address address) {
-        this.managerId = managerId;
+    public Manager(String managerName, String managerEmail, String managerPassword, String managerContact, String pmStatus, String builderId, String addressId) {
         this.managerName = managerName;
         this.managerEmail = managerEmail;
         this.managerPassword = managerPassword;
         this.managerContact = managerContact;
-        this.managerStatus = managerStatus;
+        this.pmStatus = pmStatus;
         this.builderId = builderId;
-        this.address = address;
+        this.addressId = addressId;
     }
 
     public String getManagerId() {
@@ -66,12 +63,12 @@ public class Manager {
         this.managerContact = managerContact;
     }
 
-    public String getManagerStatus() {
-        return managerStatus;
+    public String getPmStatus() {
+        return pmStatus;
     }
 
-    public void setManagerStatus(String managerStatus) {
-        this.managerStatus = managerStatus;
+    public void setPmStatus(String pmStatus) {
+        this.pmStatus = pmStatus;
     }
 
     public String getBuilderId() {
@@ -82,12 +79,11 @@ public class Manager {
         this.builderId = builderId;
     }
 
-    public Address getAddress() {
-        return address;
+    public String getAddressId() {
+        return addressId;
     }
 
-    public void setAddress(Address address) {
-        this.address = address;
+    public void setAddressId(String addressId) {
+        this.addressId = addressId;
     }
 }
-

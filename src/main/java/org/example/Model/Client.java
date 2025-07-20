@@ -1,26 +1,23 @@
 package org.example.Model;
-
+// Client Model
 public class Client {
     private String clientId;
     private String clientName;
     private String clientEmail;
     private String clientPassword;
     private String clientContact;
-    private String clientType; // INDIVIDUAL or CORPORATE
-    private Address address;   // Composition with Address
+    private String clientType;
+    private String addressId;
 
-    public Client() {
-    }
+    public Client() {}
 
-    public Client(String clientId, String clientName, String clientEmail, String clientPassword,
-                  String clientContact, String clientType, Address address) {
-        this.clientId = clientId;
+    public Client(String clientName, String clientEmail, String clientPassword, String clientContact, String clientType, String addressId) {
         this.clientName = clientName;
         this.clientEmail = clientEmail;
         this.clientPassword = clientPassword;
         this.clientContact = clientContact;
         this.clientType = clientType;
-        this.address = address;
+        this.addressId = addressId;
     }
 
     public String getClientId() {
@@ -71,11 +68,11 @@ public class Client {
         this.clientType = clientType;
     }
 
-    public Address getAddress() {
-        return address;
+    public String getAddressId() {
+        return addressId;
     }
 
-    public void setAddress(Address address) {
-        this.address = address;
+    public void setAddressId(String addressId) {
+        this.addressId = addressId;
     }
 }

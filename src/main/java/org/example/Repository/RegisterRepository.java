@@ -42,10 +42,10 @@ public class RegisterRepository {
                                   String contact, String clientType, String pmStatus, String builderId) throws Exception {
 
         String sql = switch (role) {
-            case "admin" -> "INSERT INTO admin (admin_name, admin_email, admin_password, admin_addressid, admin_contact) VALUES (?, ?, ?, ?, ?)";
-            case "builder" -> "INSERT INTO builder (builder_name, builder_email, builder_password, builder_addressid, builder_contact) VALUES (?, ?, ?, ?, ?)";
-            case "client" -> "INSERT INTO client (client_name, client_email, client_password, client_addressid, client_contact, client_type) VALUES (?, ?, ?, ?, ?, ?)";
-            case "manager" -> "INSERT INTO manager (manager_name, manager_email, manager_password, manager_addressid, manager_contact, pm_status, builder_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            case "admin" -> "INSERT INTO admin (admin_name, admin_email, admin_password, address_id, admin_contact) VALUES (?, ?, ?, ?, ?)";
+            case "builder" -> "INSERT INTO builder (builder_name, builder_email, builder_password, address_id, builder_contact) VALUES (?, ?, ?, ?, ?)";
+            case "client" -> "INSERT INTO client (client_name, client_email, client_password, address_id, client_contact, client_type) VALUES (?, ?, ?, ?, ?, ?)";
+            case "manager" -> "INSERT INTO manager (manager_name, manager_email, manager_password, manager_address_id, manager_contact, pm_status, builder_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
             default -> throw new IllegalArgumentException("Invalid role");
         };
 

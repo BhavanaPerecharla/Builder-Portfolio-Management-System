@@ -11,7 +11,6 @@ public class Project {
     private Date projectEstCompleteDate;
     private Date projectActualCompleteDate;
     private String projectStatus; // Upcoming, In Progress, Completed
-
     private String managerId;     // FK to Manager
     private String clientId;      // FK to Client
     private String builderId;     // FK to Builder

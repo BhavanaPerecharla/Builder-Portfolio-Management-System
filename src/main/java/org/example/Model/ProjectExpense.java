@@ -1,20 +1,16 @@
 package org.example.Model;
 
-
-import java.math.BigDecimal;
-import java.util.Date;
-
+// ProjectExpenses Model
 public class ProjectExpense {
-    private String projectId;           // FK to Project
-    private int paymentId;              // Part of composite PK (projectId + paymentId)
-    private Date paymentDate;
-    private BigDecimal amount;
+    private String projectId;
+    private String paymentId;
+    private java.sql.Date paymentDate;
+    private double amount;
     private String paymentDescription;
 
-    public ProjectExpense() {
-    }
+    public ProjectExpense() {}
 
-    public ProjectExpense(String projectId, int paymentId, Date paymentDate, BigDecimal amount, String paymentDescription) {
+    public ProjectExpense(String projectId, String paymentId, java.sql.Date paymentDate, double amount, String paymentDescription) {
         this.projectId = projectId;
         this.paymentId = paymentId;
         this.paymentDate = paymentDate;
@@ -30,27 +26,27 @@ public class ProjectExpense {
         this.projectId = projectId;
     }
 
-    public int getPaymentId() {
+    public String getPaymentId() {
         return paymentId;
     }
 
-    public void setPaymentId(int paymentId) {
+    public void setPaymentId(String paymentId) {
         this.paymentId = paymentId;
     }
 
-    public Date getPaymentDate() {
+    public java.sql.Date getPaymentDate() {
         return paymentDate;
     }
 
-    public void setPaymentDate(Date paymentDate) {
+    public void setPaymentDate(java.sql.Date paymentDate) {
         this.paymentDate = paymentDate;
     }
 
-    public BigDecimal getAmount() {
+    public double getAmount() {
         return amount;
     }
 
-    public void setAmount(BigDecimal amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 
