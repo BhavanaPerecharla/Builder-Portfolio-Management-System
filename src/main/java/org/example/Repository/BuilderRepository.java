@@ -56,8 +56,11 @@ public class BuilderRepository {
 
     // GET Builder by ID
     public static Builder getBuilderById(String builderId) {
-        String query = "SELECT b.builder_id, b.name, b.email, b.password, b.contact, a.address_id, a.addressLine, a.city, a.states, a.zipCode, a.country " +
-                "FROM builder b JOIN address a ON b.address_id = a.address_id WHERE b.builder_id = ?";
+        String query = "SELECT b.builder_id, b.builder_name, b.builder_email, b.builder_password, b.builder_contact, " +
+                "a.address_id, a.address_Line1, a.city, a.states, a.zip_Code, a.country " +
+                "FROM builder b JOIN address a ON b.address_id = a.address_id " +
+                "WHERE b.builder_id = ?";
+
 
         Connection connection = null;
         PreparedStatement stmt = null;
@@ -72,19 +75,19 @@ public class BuilderRepository {
 
             if (rs.next()) {
                 Address address = new Address(
-                        rs.getString("addressLine"),
+                        rs.getString("address_Line1"),
                         rs.getString("city"),
                         rs.getString("states"),
-                        rs.getString("zipCode"),
+                        rs.getString("zip_Code"),
                         rs.getString("country")
                 );
                 address.setAddressId(rs.getString("address_id"));
 
                 builder = new Builder(
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        rs.getString("password"),
-                        rs.getString("contact"),
+                        rs.getString("builder_name"),
+                        rs.getString("builder_email"),
+                        rs.getString("builder_password"),
+                        rs.getString("builder_contact"),
                         rs.getString("address_id")
                 );
                 builder.setBuilderId(rs.getString("builder_id"));

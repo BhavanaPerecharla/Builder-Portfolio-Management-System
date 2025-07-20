@@ -68,7 +68,8 @@ public class AdminService {
                 System.out.println("\n🛠️===== Edit Profile =====");
                 System.out.println("[1] Edit Name");
                 System.out.println("[2] Edit Contact");
-                System.out.println("[3] Edit Address");
+                System.out.println("[3] Edit Email");
+                System.out.println("[4] Edit Address");
                 System.out.println("[0] Back to Dashboard");
                 System.out.print("👉 Enter your choice: ");
                 String choice = sc.nextLine().trim();
@@ -76,13 +77,20 @@ public class AdminService {
                 switch (choice) {
                     case "1":
                         admin.setAdminName(promptNonEmpty(sc, "Enter new name"));
+                        System.out.println("✅ Name updated successfully.");
                         break;
                     case "2":
                         admin.setAdminContact(promptValidContact(sc, "Enter new contact number"));
+                        System.out.println("✅ Contact updated successfully.");
                         break;
                     case "3":
+                        admin.setAdminEmail(promptNonEmpty(sc, "Enter new email"));
+                        System.out.println("✅ Email updated successfully.");
+                        break;
+                    case "4":
                         AddressEditor.editAddress(sc, address);
                         break;
+
                     case "0":
                         boolean updated = AdminRepository.updateAdmin(admin, address);
                         if (updated) {

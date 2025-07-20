@@ -26,18 +26,23 @@ public class AddressEditor {
             switch (addChoice) {
                 case "1":
                     address.setAddressLine1(promptNonEmpty(sc, "Enter Address Line 1"));
+                    System.out.println("✅ Address updated successfully.");
                     break;
                 case "2":
                     address.setCity(promptNonEmpty(sc, "Enter City"));
+                    System.out.println("✅ Address updated successfully.");
                     break;
                 case "3":
                     address.setStates(promptNonEmpty(sc, "Enter State"));
+                    System.out.println("✅ Address updated successfully.");
                     break;
                 case "4":
                     address.setZipCode(promptNonEmpty(sc, "Enter Zip Code"));
+                    System.out.println("✅ Address updated successfully.");
                     break;
                 case "5":
                     address.setCountry(promptNonEmpty(sc, "Enter Country"));
+                    System.out.println("✅ Address updated successfully.");
                     break;
                 case "0":
                     AddressRepository.updateAddress(address);
