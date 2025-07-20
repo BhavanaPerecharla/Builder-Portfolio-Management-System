@@ -164,6 +164,25 @@ public class ClientRepository {
         return success;
     }
 
+    public static String getClientIdByEmail(String email) {
+        String sql = "SELECT client_Id FROM client WHERE client_Email = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, email.trim());
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getString("client_Id");
+            }
+
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error fetching client ID by email", e);
+        }
+
+        return null;
+    }
 
     // Update Password Only
     public static boolean updatePassword(String email, String hashedPassword) {

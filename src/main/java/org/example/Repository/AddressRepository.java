@@ -97,10 +97,9 @@ public class AddressRepository {
         return addresses;
     }
 
-    // UPDATE
-    public static boolean updateAddress(Address address){
-        if (address != null) {
-            AddressRepository.updateAddress(address);
+    public static boolean updateAddress(Address address) {
+        if (address == null) {
+            return false;  // or throw IllegalArgumentException
         }
 
         String sql = "UPDATE address SET address_Line1 = ?, city = ?, states = ?, zip_Code = ?, country = ? WHERE address_Id = ?";
@@ -115,11 +114,9 @@ public class AddressRepository {
             stmt.setString(5, address.getCountry());
             stmt.setString(6, address.getAddressId());
 
-            stmt.executeUpdate();
             return stmt.executeUpdate() > 0;
 
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error updating address (ID: " + address.getAddressId() + ")", e);
             return false;
         }

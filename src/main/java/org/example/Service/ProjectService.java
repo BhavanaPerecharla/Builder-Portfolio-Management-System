@@ -7,9 +7,9 @@ import org.example.Util.InputValidator;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.util.List;
 import java.util.Scanner;
 
-import static org.example.Util.InputValidator.promptValidProjectStatus;
 
 public class ProjectService {
 
@@ -209,6 +209,43 @@ public class ProjectService {
             }
         }
     }
+    public static void viewProjectsByClientEmail(String clientEmail) {
+        String clientId = ClientRepository.getClientIdByEmail(clientEmail);
+
+        if (clientId == null) {
+            System.out.println("❌ Client not found. Cannot fetch projects.");
+            return;
+        }
+
+        List<Project> projects = ProjectRepository.getProjectsByClientId(clientId);
+
+        if (projects == null || projects.isEmpty()) {
+            System.out.println("❌ No projects found for your account.");
+            return;
+        }
+
+        System.out.println("\n📋===== Your Projects =====");
+        System.out.printf("%-15s %-20s %-30s %-15s %-15s %-15s %-12s %-12s %-12s %-12s %-12s\n",
+                "Project ID", "Name", "Description", "Start Date", "Est. Complete", "Actual Complete",
+                "Status", "Manager ID", "Client ID", "Builder ID", "Est. Cost");
+        for (Project project : projects) {
+            System.out.println("------------------------------------------------------------");
+            System.out.println("🛠️  Project ID       : " + project.getProjectId());
+            System.out.println("📛  Name             : " + project.getProjectName());
+            System.out.println("📝  Description      : " + project.getProjectDescription());
+            System.out.println("📅  Start Date       : " + project.getProjectStartDate());
+            System.out.println("📆  Est. Completion  : " + project.getProjectEstCompleteDate());
+            System.out.println("✅  Actual Completion: " + (project.getProjectActualCompleteDate() == null ? "-" : project.getProjectActualCompleteDate()));
+            System.out.println("📊  Status           : " + project.getProjectStatus());
+            System.out.println("👨‍💼 Manager ID       : " + project.getManagerId());
+            System.out.println("👤  Client ID        : " + project.getClientId());
+            System.out.println("🏗️  Builder ID       : " + project.getBuilderId());
+            System.out.println("💰 Estimated Cost    : ₹" + project.getEstimatedCost());
+            System.out.println("------------------------------------------------------------\n");
+        }
+    }
+
+
 
 
     private static void showProjectDetails(Project project) {

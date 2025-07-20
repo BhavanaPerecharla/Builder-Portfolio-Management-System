@@ -49,6 +49,7 @@ public class AdminService {
     }
 
     public static void editProfile(String email) {
+        viewProfile(email); // Show current profile before editing
         Scanner sc = new Scanner(System.in);
 
         try {

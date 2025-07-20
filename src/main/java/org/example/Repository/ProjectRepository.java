@@ -7,9 +7,13 @@ import org.example.Util.DBConnection;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+
 
 public class ProjectRepository {
-
+    private static final Logger logger = Logger.getLogger(ProjectRepository.class.getName());
     public static List<Project> getProjectsByBuilderEmail(String builderEmail) {
         List<Project> projects = new ArrayList<>();
 
@@ -61,6 +65,40 @@ public class ProjectRepository {
             e.printStackTrace();
             return false;
         }
+    }
+    public static List<Project> getProjectsByClientId(String clientId) {
+        List<Project> projects = new ArrayList<>();
+
+        String sql = "SELECT * FROM project WHERE Client_Id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, clientId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Project project = new Project();
+                project.setProjectId(rs.getString("project_Id"));
+                project.setProjectName(rs.getString("project_Name"));
+                project.setProjectDescription(rs.getString("project_Description"));
+                project.setProjectStartDate(rs.getDate("project_Start_Date"));
+                project.setProjectEstCompleteDate(rs.getDate("project_Est_Complete_Date"));
+                project.setProjectActualCompleteDate(rs.getDate("project_Actual_Complete_Date"));
+                project.setProjectStatus(rs.getString("project_Status"));
+                project.setManagerId(rs.getString("Manager_Id"));
+                project.setClientId(rs.getString("Client_Id"));
+                project.setBuilderId(rs.getString("Builder_Id"));
+                project.setEstimatedCost(rs.getBigDecimal("estimated_Cost"));
+
+                projects.add(project);
+            }
+
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error fetching projects for client ID: " + clientId, e);
+        }
+
+        return projects;
     }
 
     public static boolean updateProjectStatus(String projectId, String newStatus) {

@@ -49,15 +49,17 @@ public class AdminRepository {
 
     // Get Admin by Email
     public static Admin getAdminByEmail(String email) {
-        String sql = "SELECT * FROM admin WHERE admin_Email = ?";
+        String sql = "SELECT * FROM admin WHERE LOWER(admin_Email) = LOWER(?)";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, email);
+            stmt.setString(1, email.trim());
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
+                System.out.println("[DEBUG] Admin found for email: " + email);
+
                 Admin admin = new Admin();
                 admin.setAdminId(rs.getString("admin_Id"));
                 admin.setAdminName(rs.getString("admin_Name"));
@@ -67,6 +69,8 @@ public class AdminRepository {
                 admin.setAddressId(rs.getString("address_id"));
 
                 return admin;
+            } else {
+                System.out.println("[DEBUG] No Admin found for email: " + email);
             }
 
         } catch (SQLException e) {
@@ -75,6 +79,7 @@ public class AdminRepository {
 
         return null;
     }
+
 
     // Update Admin and Address
     public static boolean updateAdmin(Admin admin, Address address) {
