@@ -7,13 +7,7 @@ public class InputValidator {
 
     private static final Pattern CONTACT_PATTERN = Pattern.compile("^\\d{10}$");
 
-    /**
-     * Prompts user until a non-empty string is entered.
-     *
-     * @param sc     Scanner instance
-     * @param prompt Prompt message
-     * @return Valid non-empty input
-     */
+
     public static String promptNonEmpty(Scanner sc, String prompt) {
         String input;
         while (true) {
@@ -34,7 +28,7 @@ public class InputValidator {
      * @param sc Scanner instance
      * @return Valid contact number
      */
-    public static String promptValidContact(Scanner sc) {
+    public static String promptValidContact(Scanner sc,String prompt) {
         String contact;
         while (true) {
             System.out.print("📞 Enter 10-digit contact number: ");
