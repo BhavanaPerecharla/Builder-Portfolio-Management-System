@@ -102,6 +102,10 @@ public class ClientService {
         }
     }
 
+    // Add method to get client ID from email:
+    public static String getClientIdByEmail(String clientEmail) {
+        return ClientRepository.getClientIdByEmail(clientEmail);
+    }
 
 
 

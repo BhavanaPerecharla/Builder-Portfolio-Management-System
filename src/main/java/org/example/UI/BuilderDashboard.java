@@ -32,7 +32,7 @@ public class BuilderDashboard {
                     break;
 
                 case "4":
-                    ProjectUI.manageProjects(email);   // Delegates all project tasks to ProjectUI
+                    ProjectUI.manageProjects(email);  
                     break;
 
                 case "0":

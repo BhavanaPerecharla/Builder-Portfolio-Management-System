@@ -252,6 +252,7 @@ public class ProjectRepository {
     }
 
 
+
     private static Project mapProject(ResultSet rs) throws SQLException {
         Project project = new Project();
 
@@ -269,4 +270,6 @@ public class ProjectRepository {
 
         return project;
     }
+
+
 }

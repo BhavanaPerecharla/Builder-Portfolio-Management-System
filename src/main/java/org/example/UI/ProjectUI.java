@@ -18,6 +18,8 @@ public class ProjectUI {
             System.out.println("[2] Add New Project");
             System.out.println("[3] Edit Project");
             System.out.println("[4] Delete Project");
+            System.out.println("[5] Add Payment for Project");
+            System.out.println("[6] View Payments For Project");
             System.out.println("[0] Back to Dashboard");
             System.out.print("👉 Enter your choice: ");
             String choice = sc.nextLine().trim();
@@ -40,7 +42,14 @@ public class ProjectUI {
                     displayProjects(builderEmail);
                     ProjectService.deleteProjectByMenu();
                     break;
-
+                case "5" :
+                    displayProjectSummary(builderEmail);
+                    ProjectService.addPaymentForProject();
+                    break;
+                case "6" :
+                    displayProjectSummary(builderEmail);
+                    ProjectService.viewPaymentsForProject();
+                    break;
                 case "0":
                     return;
 
@@ -50,6 +59,7 @@ public class ProjectUI {
         }
     }
 
+    // Method to display all projects for the builder
     private static void displayProjects(String builderEmail) {
         List<Project> projects = ProjectRepository.getProjectsByBuilderEmail(builderEmail);
 
@@ -58,10 +68,7 @@ public class ProjectUI {
             return;
         }
 
-        System.out.println("\n📋===== Your Projects =====");
-        System.out.printf("%-15s %-20s %-15s %-15s %-15s %-15s %-12s %-10s %-10s %-12s %-25s\n",
-                "Project ID", "Name", "Start Date", "Est. Comp Date", "Actual Comp Date",
-                "Status", "Manager", "Client", "Builder", "Est. Cost", "Description");
+        // Displaying the list of projects
         System.out.println("\n📋===== Your Projects =====");
 
         for (Project project : projects) {
@@ -80,6 +87,21 @@ public class ProjectUI {
             System.out.println("🏗️  Builder ID         : " + project.getBuilderId());
             System.out.println("💰 Estimated Cost       : ₹" + project.getEstimatedCost());
             System.out.println("------------------------------------------------------------\n");
+        }
+    }
+
+    // In ProjectUI.java
+    public static void displayProjectSummary(String builderEmail) {
+        List<Project> projects = ProjectRepository.getProjectsByBuilderEmail(builderEmail);
+
+        if (projects.isEmpty()) {
+            System.out.println("⚠️  No projects found.");
+            return;
+        }
+
+        System.out.println("\n📋 Project List (ID - Name):");
+        for (Project project : projects) {
+            System.out.println(project.getProjectId() + " - " + project.getProjectName());
         }
     }
 

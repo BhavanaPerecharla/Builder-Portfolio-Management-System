@@ -14,6 +14,9 @@ public class AdminDashboard {
             System.out.println("[1] View Profile");
             System.out.println("[2] Edit Profile");
             System.out.println("[3] Change Password");
+            System.out.println("[4] View All Builders");
+            System.out.println("[5] View All Clients");
+            System.out.println("[6] View All Managers");
             System.out.println("[0] Logout");
             System.out.print("👉 Enter your choice: ");
             String choice = sc.nextLine().trim();
@@ -31,6 +34,17 @@ public class AdminDashboard {
                     AdminService.changePassword(email);
                     break;
 
+                case "4":
+                    AdminService.viewAllBuilders();
+                    break;
+
+                case "5":
+                    AdminService.viewAllClients();
+                    break;
+
+                case "6":
+                    AdminService.viewAllManagers();
+                    break;
                 case "0":
                     System.out.println("👋 Logging out...");
                     return;

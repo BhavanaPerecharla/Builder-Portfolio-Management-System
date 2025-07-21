@@ -2,6 +2,7 @@ package org.example.Service;
 
 import org.example.Model.Manager;
 import org.example.Model.Project;
+import org.example.Model.ProjectExpense;
 import org.example.Repository.*;
 import org.example.Util.InputValidator;
 
@@ -199,9 +200,9 @@ public class ProjectService {
                         System.out.println("❌ Invalid Builder ID. No such builder exists.");
                     }
                 }
-                default -> {
+                default ->
                     System.out.println("❌ Unknown table specified.");
-                }
+
             }
 
             if (exists) {
@@ -209,6 +210,51 @@ public class ProjectService {
             }
         }
     }
+    public static void viewPaymentsForClientProjects(String clientEmail) {
+        String clientId = ClientService.getClientIdByEmail(clientEmail);
+        if (clientId == null) {
+            System.out.println("❌ Client not found.");
+            return;
+        }
+
+        List<Project> projects = ProjectRepository.getProjectsByClientId(clientId);
+
+        if (projects.isEmpty()) {
+            System.out.println("⚠️  No projects found for this client.");
+            return;
+        }
+
+        System.out.println("\n📋 Your Projects:");
+        for (Project project : projects) {
+            System.out.println(project.getProjectId() + " - " + project.getProjectName());
+        }
+
+        Scanner sc = new Scanner(System.in);
+        System.out.print("👉 Enter Project ID to view payments: ");
+        String projectId = sc.nextLine().trim();
+
+        Project selectedProject = projects.stream()
+                .filter(p -> p.getProjectId().equalsIgnoreCase(projectId))
+                .findFirst()
+                .orElse(null);
+
+        if (selectedProject == null) {
+            System.out.println("❌ Invalid Project ID.");
+            return;
+        }
+
+        List<ProjectExpense> expenses = ProjectExpenseRepository.getExpensesByProjectId(projectId);
+
+        if (expenses.isEmpty()) {
+            System.out.println("💡 No payments recorded for this project.");
+        } else {
+            System.out.println("\n💰 Payments for Project: " + projectId);
+            for (ProjectExpense expense : expenses) {
+                System.out.println(expense.getPaymentDate() + " | ₹" + expense.getAmount() + " | " + expense.getPaymentDescription());
+            }
+        }
+    }
+
     public static void viewProjectsByClientEmail(String clientEmail) {
         String clientId = ClientRepository.getClientIdByEmail(clientEmail);
 
@@ -225,9 +271,7 @@ public class ProjectService {
         }
 
         System.out.println("\n📋===== Your Projects =====");
-        System.out.printf("%-15s %-20s %-30s %-15s %-15s %-15s %-12s %-12s %-12s %-12s %-12s\n",
-                "Project ID", "Name", "Description", "Start Date", "Est. Complete", "Actual Complete",
-                "Status", "Manager ID", "Client ID", "Builder ID", "Est. Cost");
+
         for (Project project : projects) {
             System.out.println("------------------------------------------------------------");
             System.out.println("🛠️  Project ID       : " + project.getProjectId());
@@ -294,6 +338,54 @@ public class ProjectService {
             System.out.println("❌ No " + statusCategory.toLowerCase() + " projects found.\n");
         }
     }
+    public static void addPaymentForProject() {
+        System.out.print("\nEnter Project ID to add payment: ");
+        String projectId = sc.nextLine().trim();
+
+        Date paymentDate = InputValidator.promptValidDate(sc, "Enter Payment Date (YYYY-MM-DD):");
+        BigDecimal amountBigDecimal = InputValidator.promptValidAmount(sc, "Enter Payment Amount:");
+        double amount = amountBigDecimal.doubleValue();
+
+        String description = InputValidator.promptNonEmpty(sc, "Enter Payment Description:");
+
+        ProjectExpense expense = new ProjectExpense(projectId, null, paymentDate, amount, description);
+
+        boolean success = ProjectExpenseRepository.insertExpense(expense);
+
+        if (success) {
+            System.out.println("✅ Payment recorded successfully.");
+        } else {
+            System.out.println("❌ Failed to record payment.");
+        }
+    }
+
+
+    public static void viewPaymentsForProject() {
+        System.out.print("\n🔎 Enter Project ID to view payments: ");
+        String projectId = sc.nextLine().trim();
+
+        List<ProjectExpense> expenses = ProjectExpenseRepository.getExpensesByProjectId(projectId);
+
+        if (expenses.isEmpty()) {
+            System.out.println("❌ No payments found for this project.");
+            return;
+        }
+
+        System.out.println("\n💰===== Payments for Project ID: " + projectId + " =====");
+
+        for (ProjectExpense expense : expenses) {
+            System.out.println("============================================");
+            System.out.println("🏗️  Project ID     : " + expense.getProjectId());
+            System.out.println("🆔 Payment ID      : " + (expense.getPaymentId() != null ? expense.getPaymentId() : "(Auto-Generated)"));
+            System.out.println("📅 Payment Date    : " + expense.getPaymentDate());
+            System.out.println("💵 Amount Paid     : ₹" + expense.getAmount());
+            System.out.println("📝 Description     : " + expense.getPaymentDescription());
+        }
+
+        System.out.println("============================================");
+    }
+
+
 
 
     private static void showProjectDetails(Project project) {

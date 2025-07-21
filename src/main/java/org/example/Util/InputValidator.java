@@ -1,9 +1,5 @@
 package org.example.Util;
 
-import org.example.Model.Manager;
-import org.example.Repository.BuilderRepository;
-import org.example.Repository.ClientRepository;
-import org.example.Repository.ManagerRepository;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -87,27 +83,6 @@ public class InputValidator {
                 }
             } catch (NumberFormatException e) {
                 System.out.println("❌ Invalid number format. Please enter a valid number.");
-            }
-        }
-    }
-    /**
-     * Prompts the user to enter a valid project status.
-     * The status can be either 'Upcoming', 'In Progress', or 'Completed'.
-     *
-     * @param sc Scanner instance
-     * @return Valid project status
-     */
-    public static String promptValidProjectStatus(Scanner sc) {
-        while (true) {
-            System.out.print("Enter Project Status (Upcoming / In Progress / Completed): ");
-            String status = sc.nextLine().trim();
-
-            if ("Upcoming".equalsIgnoreCase(status) ||
-                    "In Progress".equalsIgnoreCase(status) ||
-                    "Completed".equalsIgnoreCase(status)) {
-                return status;  // Return valid status
-            } else {
-                System.out.println("❌ Invalid status. Choose: Upcoming, In Progress, or Completed.");
             }
         }
     }
