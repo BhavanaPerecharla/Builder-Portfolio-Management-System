@@ -1,6 +1,10 @@
 package org.example.Model;
 
-// Manager Model
+/**
+ * Represents a Manager entity in the system.
+ * Includes contact, project management status, and assignment details.
+ */
+
 public class Manager {
     private String managerId;
     private String managerName;
@@ -11,6 +15,7 @@ public class Manager {
     private String builderId;
     private String addressId;
 
+    // Default constructor
     public Manager() {}
 
     public Manager(String managerName, String managerEmail, String managerPassword, String managerContact, String pmStatus, String builderId, String addressId) {
@@ -23,6 +28,7 @@ public class Manager {
         this.addressId = addressId;
     }
 
+    // Getters and Setters
     public String getManagerId() {
         return managerId;
     }

@@ -1,5 +1,10 @@
 package org.example.Model;
-// Client Model
+
+/**
+ * Represents a Client entity in the system.
+ * Includes basic client information and address association.
+ */
+
 public class Client {
     private String clientId;
     private String clientName;
@@ -10,8 +15,10 @@ public class Client {
     private String addressId;
     private Address address;
 
+    // Constructors
     public Client() {}
 
+    // Parameterized constructor
     public Client(String clientId, String clientName, String clientEmail, String clientPassword,
                   String clientContact, String clientType,String addressId, Address address) {
         this.clientId = clientId;
@@ -24,6 +31,7 @@ public class Client {
         this.address = address;
     }
 
+    // Getters and Setters
     public String getClientId() {
         return clientId;
     }
@@ -83,7 +91,14 @@ public class Client {
         return address;
     }
 
+    /**
+     * Sets the Address object and auto-syncs the addressId for consistency.
+     */
+
     public void setAddress(Address address) {
         this.address = address;
+        if (address != null) {
+            this.addressId = address.getAddressId();
+        }
     }
 }

@@ -2,6 +2,10 @@ package org.example.Model;
 
 import java.math.BigDecimal;
 import java.util.Date;
+/**
+ * Represents a Project in the construction management system.
+ * Tracks project details, associated users, timeline, and cost.
+ */
 
 public class Project {
     private String projectId;
@@ -16,9 +20,11 @@ public class Project {
     private String builderId;     // FK to Builder
     private BigDecimal estimatedCost;
 
+    // Constructors
     public Project() {
     }
 
+    //Parameterized constructor
     public Project(String projectId, String projectName, String projectDescription,
                    Date projectStartDate, Date projectEstCompleteDate, Date projectActualCompleteDate,
                    String projectStatus, String managerId, String clientId, String builderId, BigDecimal estimatedCost) {
@@ -35,6 +41,7 @@ public class Project {
         this.estimatedCost = estimatedCost;
     }
 
+    // Getters and Setters
     public String getProjectId() {
         return projectId;
     }

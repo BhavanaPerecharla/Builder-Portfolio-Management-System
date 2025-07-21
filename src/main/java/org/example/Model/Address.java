@@ -1,5 +1,8 @@
 package org.example.Model;
-
+/**
+ * Represents an Address entity.
+ * Contains details like city, state, zip code, etc.
+ */
 
 // Address Model
 public class Address {
@@ -10,8 +13,10 @@ public class Address {
     private String zipCode;
     private String country;
 
+    // Default Constructor
     public Address() {}
 
+    // Parameterized Constructor
     public Address(String addressLine1, String city, String states, String zipCode, String country) {
         this.addressLine1 = addressLine1;
         this.city = city;
@@ -20,6 +25,7 @@ public class Address {
         this.country = country;
     }
 
+    // Getters and Setters
     public String getAddressId() {
         return addressId;
     }
@@ -66,5 +72,17 @@ public class Address {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    @Override
+    public String toString() {
+        return "Address{" +
+                "addressId='" + addressId + '\'' +
+                ", addressLine1='" + addressLine1 + '\'' +
+                ", city='" + city + '\'' +
+                ", states='" + states + '\'' +
+                ", zipCode='" + zipCode + '\'' +
+                ", country='" + country + '\'' +
+                '}';
     }
 }

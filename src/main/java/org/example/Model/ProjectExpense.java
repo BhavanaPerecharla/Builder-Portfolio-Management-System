@@ -1,6 +1,8 @@
 package org.example.Model;
+/**
+ * Represents an individual project expense/payment entry.
+ */
 
-// ProjectExpenses Model
 public class ProjectExpense {
     private String projectId;
     private String paymentId;
@@ -8,8 +10,10 @@ public class ProjectExpense {
     private double amount;
     private String paymentDescription;
 
+    //Default constructor
     public ProjectExpense() {}
 
+    //Parameterized constructor to initialize all fields
     public ProjectExpense(String projectId, String paymentId, java.sql.Date paymentDate, double amount, String paymentDescription) {
         this.projectId = projectId;
         this.paymentId = paymentId;
@@ -18,6 +22,7 @@ public class ProjectExpense {
         this.paymentDescription = paymentDescription;
     }
 
+    // Getters and Setters for each field
     public String getProjectId() {
         return projectId;
     }

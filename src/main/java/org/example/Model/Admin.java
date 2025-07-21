@@ -1,7 +1,10 @@
 package org.example.Model;
 
+/**
+ * Represents an Admin user in the system.
+ * Contains personal details and associated address.
+ */
 
-// Admin Model
 public class Admin {
     private String adminId;
     private String adminName;
@@ -9,9 +12,10 @@ public class Admin {
     private String adminPassword;
     private String adminContact;
     private String addressId;
-
+    // No-args constructor
     public Admin() {}
 
+    // Parameterized constructor
     public Admin(String adminName, String adminEmail, String adminPassword, String adminContact, String addressId) {
         this.adminName = adminName;
         this.adminEmail = adminEmail;
@@ -20,6 +24,7 @@ public class Admin {
         this.addressId = addressId;
     }
 
+    // Getters and Setters
     public String getAdminId() {
         return adminId;
     }

@@ -1,6 +1,10 @@
 package org.example.Model;
 
 import java.sql.Timestamp;
+/**
+ * Represents a document uploaded for a specific project.
+ * Supports file metadata and content storage.
+ */
 
 public class ProjectDocument {
 
@@ -11,17 +15,11 @@ public class ProjectDocument {
     private byte[] fileData;
     private Timestamp uploadedOn;
 
-    // --- Constructors ---
+    // Default constructor
     public ProjectDocument() {
     }
 
-    public ProjectDocument(String projectId, String fileName, String fileType, byte[] fileData) {
-        this.projectId = projectId;
-        this.fileName = fileName;
-        this.fileType = fileType;
-        this.fileData = fileData;
-    }
-
+   // Parameterized constructor to initialize all fields
     public ProjectDocument(String projectId, String fileName, String fileType, byte[] fileData, Timestamp uploadedOn) {
 
         this.projectId = projectId;
@@ -31,7 +29,7 @@ public class ProjectDocument {
         this.uploadedOn = uploadedOn;
     }
 
-    // --- Getters and Setters ---
+    //  Getters and Setters methods for each field
 
     public String getDocumentId() {
         return documentId;
@@ -81,6 +79,7 @@ public class ProjectDocument {
         this.uploadedOn = uploadedOn;
     }
 
+    // Override equals method to compare ProjectDocument objects based on documentId
     @Override
     public String toString() {
         return "ProjectDocument{" +

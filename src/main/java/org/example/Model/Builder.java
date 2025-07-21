@@ -1,5 +1,9 @@
 package org.example.Model;
-// Builder Model
+
+/**
+ * Represents a Builder in the system.
+ * Holds basic information along with address association.
+ */
 public class Builder {
     private String builderId;
     private String builderName;
@@ -9,8 +13,10 @@ public class Builder {
     private String addressId;
     private Address address;
 
+    // No-args constructor
     public Builder() {}
 
+    // Constructor with Address ID
     public Builder(String builderName, String builderEmail, String builderPassword, String builderContact, String addressId) {
         this.builderName = builderName;
         this.builderEmail = builderEmail;
@@ -18,6 +24,8 @@ public class Builder {
         this.builderContact = builderContact;
         this.addressId = addressId;
     }
+
+    // Constructor with Address object
     public Builder(String builderId, String builderName, String builderEmail, String builderPassword, String builderContact, Address address) {
         this.builderId = builderId;
         this.builderName = builderName;
@@ -25,11 +33,17 @@ public class Builder {
         this.builderPassword = builderPassword;
         this.builderContact = builderContact;
         this.address = address;
+        syncAddressIdFromAddress();
+    }
+
+    // Sync method (if address is set externally)
+    public void syncAddressIdFromAddress() {
         if (address != null) {
             this.addressId = address.getAddressId();
         }
     }
 
+    // Getters and Setters
     public String getBuilderId() {
         return builderId;
     }
@@ -77,7 +91,7 @@ public class Builder {
     public void setAddressId(String addressId) {
         this.addressId = addressId;
     }
-    public Address getAddress() { // ✅ Needed for your logic
+    public Address getAddress() {
         return address;
     }
 
