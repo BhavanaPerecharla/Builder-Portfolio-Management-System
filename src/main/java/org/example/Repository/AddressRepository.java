@@ -70,36 +70,31 @@ public class AddressRepository {
         return address;
     }
 
-    // READ - All
-    public List<Address> getAllAddresses() {
-        List<Address> addresses = new ArrayList<>();
-        String sql = "SELECT * FROM address";
+    public static void deleteAddress(String addressId) {
+        String sql = "DELETE FROM address WHERE address_id = ?";
 
         try (Connection conn = DBConnection.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            while (rs.next()) {
-                Address address = new Address();
-                address.setAddressId(rs.getString("address_Id"));
-                address.setAddressLine1(rs.getString("address_Line1"));
-                address.setCity(rs.getString("city"));
-                address.setStates(rs.getString("States"));
-                address.setZipCode(rs.getString("zip_Code"));
-                address.setCountry(rs.getString("country"));
-                addresses.add(address);
+            stmt.setString(1, addressId);
+            int rowsAffected = stmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("✅ Address deleted successfully (Address ID: " + addressId + ")");
+            } else {
+                System.out.println("⚠️ No address found with ID: " + addressId);
             }
 
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error fetching all addresses", e);
+            System.out.println("❌ Error deleting address: " + e.getMessage());
+            e.printStackTrace();
         }
-
-        return addresses;
     }
+
 
     public static boolean updateAddress(Address address) {
         if (address == null) {
-            return false;  // or throw IllegalArgumentException
+            return false;
         }
 
         String sql = "UPDATE address SET address_Line1 = ?, city = ?, states = ?, zip_Code = ?, country = ? WHERE address_Id = ?";
@@ -122,21 +117,6 @@ public class AddressRepository {
         }
     }
 
-    // DELETE
-    public static void deleteAddress(String addressId) {
-        String sql = "DELETE FROM address WHERE address_Id = ?";
-
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, addressId);
-            stmt.executeUpdate();
-            logger.info("Address deleted successfully.");
-
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error deleting address", e);
-        }
-    }
 
 
 }

@@ -183,6 +183,42 @@ public class ProjectRepository {
         }
         return null;
     }
+    public static List<Project> getProjectsByClientEmail(String clientEmail) {
+        List<Project> projects = new ArrayList<>();
+
+        String sql = "SELECT * FROM project WHERE client_id IN (SELECT client_id FROM client WHERE client_email = ?)";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, clientEmail);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Project project = new Project();
+                    project.setProjectId(rs.getString("project_id"));
+                    project.setProjectName(rs.getString("project_name"));
+                    project.setProjectDescription(rs.getString("project_description"));
+                    project.setProjectStartDate(rs.getDate("project_start_date"));
+                    project.setProjectEstCompleteDate(rs.getDate("project_est_complete_date"));
+                    project.setProjectActualCompleteDate(rs.getDate("project_actual_complete_date"));
+                    project.setProjectStatus(rs.getString("project_status"));
+                    project.setManagerId(rs.getString("manager_id"));
+                    project.setClientId(rs.getString("client_id"));
+                    project.setBuilderId(rs.getString("builder_id"));
+                    project.setEstimatedCost(rs.getBigDecimal("estimated_cost"));
+
+                    projects.add(project);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return projects;
+    }
+
 
     public static boolean updateProject(Project project) {
         String sql = "UPDATE project SET project_name = ?, project_description = ?, project_start_date = ?, " +
@@ -251,6 +287,23 @@ public class ProjectRepository {
         return projects;
     }
 
+    public static boolean projectExists(String projectId) {
+        String sql = "SELECT 1 FROM project WHERE project_id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, projectId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();  // true if project exists
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
 
     private static Project mapProject(ResultSet rs) throws SQLException {

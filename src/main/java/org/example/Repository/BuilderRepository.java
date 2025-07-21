@@ -17,42 +17,19 @@ import java.util.logging.Logger;
 
 public class BuilderRepository {
     private static final Logger logger = Logger.getLogger(BuilderRepository.class.getName());
-    // INSERT Builder with Address
-    public void insertBuilder(Builder builder, Address address) {
-        String insertBuilderQuery = "INSERT INTO builder (name, email, password, contact, address_id) VALUES (?, ?, ?, ?, ?)";
+    private static BuilderRepository instance;
+    private BuilderRepository() {
 
-        Connection connection = null;
-        PreparedStatement builderStmt = null;
-
-        try {
-            connection = DBConnection.getConnection();
-            connection.setAutoCommit(false);
-
-            String addressId = AddressRepository.insertAddress(address);
-
-            builderStmt = connection.prepareStatement(insertBuilderQuery);
-            builderStmt.setString(1, builder.getBuilderName());
-            builderStmt.setString(2, builder.getBuilderEmail());
-            builderStmt.setString(3, builder.getBuilderPassword());
-            builderStmt.setString(4, builder.getBuilderContact());
-            builderStmt.setString(5, addressId);
-
-            builderStmt.executeUpdate();
-            connection.commit();
-
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error inserting builder", e);
-            try {
-                if (connection != null) connection.rollback();
-            } catch (SQLException ex) {
-                logger.log(Level.SEVERE, "Rollback failed", ex);
-            }
-        } finally {
-            DBConnection.closeStatement(builderStmt);
-            DBConnection.closeConnection(connection);
-        }
     }
 
+    public static BuilderRepository getInstance() {
+        if (instance == null) {
+            instance = new BuilderRepository();
+        }
+        return instance;
+    }
+
+    // INSERT Builder and Address
     public static String getBuilderIdByEmail(String email) {
         String builderId = null;
         try (Connection conn = DBConnection.getConnection();
@@ -118,6 +95,8 @@ public class BuilderRepository {
         }
         return builder;
     }
+
+    // GET Builder by Email
     public static Builder getBuilderByEmail(String email) {
         String query = "SELECT * FROM builder WHERE builder_Email = ?";
         try (Connection conn = DBConnection.getConnection();
@@ -147,8 +126,10 @@ public class BuilderRepository {
     // GET All Builders
     public List<Builder> getAllBuilders() {
         List<Builder> builders = new ArrayList<>();
-        String query = "SELECT b.builder_id, b.name, b.email, b.password, b.contact, a.address_id, a.addressLine, a.city, a.states, a.zipCode, a.country " +
+        String query = "SELECT b.builder_id, b.builder_name, b.builder_email, b.builder_password, b.builder_contact, " +
+                "a.address_id, a.address_Line1, a.city, a.states, a.zip_Code, a.country " +
                 "FROM builder b JOIN address a ON b.address_id = a.address_id";
+
 
         Connection connection = null;
         Statement stmt = null;
@@ -161,27 +142,31 @@ public class BuilderRepository {
 
             while (rs.next()) {
                 Address address = new Address(
-                        rs.getString("addressLine"),
+                        rs.getString("address_Line1"),
                         rs.getString("city"),
                         rs.getString("states"),
-                        rs.getString("zipCode"),
+                        rs.getString("zip_Code"),
                         rs.getString("country")
                 );
                 address.setAddressId(rs.getString("address_id"));
 
-                Builder builder = new Builder(
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        rs.getString("password"),
-                        rs.getString("contact"),
+
+                        Builder builder = new Builder(
+                        rs.getString("builder_Name"),
+                        rs.getString("builder_Email"),
+                        rs.getString("builder_password"),
+                        rs.getString("builder_Contact"),
                         rs.getString("address_id")
                 );
+
+
                 builder.setBuilderId(rs.getString("builder_id"));
 
                 builders.add(builder);
             }
 
         } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error retrieving all builders", e);
             e.printStackTrace();
         } finally {
             DBConnection.closeResultSet(rs);
@@ -191,6 +176,9 @@ public class BuilderRepository {
 
         return builders;
     }
+
+
+
 
     public static boolean updateBuilder(Builder builder) {
         if (builder == null) {
@@ -256,51 +244,7 @@ public class BuilderRepository {
     }
 
 
-    // DELETE Builder and Address
-    public void deleteBuilder(String builderId) {
-        String selectAddressIdQuery = "SELECT address_id FROM builder WHERE builder_id = ?";
-        String deleteBuilderQuery = "DELETE FROM builder WHERE builder_id = ?";
-        String deleteAddressQuery = "DELETE FROM address WHERE address_id = ?";
-
-        Connection connection = null;
-        PreparedStatement selectStmt = null;
-        PreparedStatement deleteBuilderStmt = null;
-        PreparedStatement deleteAddressStmt = null;
-        ResultSet rs = null;
-
-        try {
-            connection = DBConnection.getConnection();
-            connection.setAutoCommit(false);
-
-            selectStmt = connection.prepareStatement(selectAddressIdQuery);
-            selectStmt.setString(1, builderId);
-            rs = selectStmt.executeQuery();
-
-            String addressId = null;
-            if (rs.next()) {
-                addressId = rs.getString("address_id");
-            }
-
-            deleteBuilderStmt = connection.prepareStatement(deleteBuilderQuery);
-            deleteBuilderStmt.setString(1, builderId);
-            deleteBuilderStmt.executeUpdate();
-
-            deleteAddressStmt = connection.prepareStatement(deleteAddressQuery);
-            deleteAddressStmt.setString(1, addressId);
-            deleteAddressStmt.executeUpdate();
-
-            connection.commit();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            DBConnection.closeResultSet(rs);
-            DBConnection.closeStatement(selectStmt);
-            DBConnection.closeStatement(deleteBuilderStmt);
-            DBConnection.closeStatement(deleteAddressStmt);
-            DBConnection.closeConnection(connection);
-        }
-    }
+    // Update Builder Password
     public static boolean updatePassword(String email, String hashedPassword) {
         String sql = "UPDATE builder SET builder_password = ? WHERE builder_email = ?";
 

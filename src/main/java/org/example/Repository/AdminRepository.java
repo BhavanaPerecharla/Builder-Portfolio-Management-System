@@ -12,42 +12,7 @@ import java.util.logging.Logger;
 public class AdminRepository {
     private static final Logger logger = Logger.getLogger(AdminRepository.class.getName());
 
-    // Insert Admin with Address
-    public static void insertAdmin(Admin admin, Address address) {
-        String insertAdminSQL = "INSERT INTO admin (admin_Name, admin_Email, admin_Password, admin_Contact, address_id) VALUES (?, ?, ?, ?, ?)";
-        Connection connection = null;
-        PreparedStatement adminStmt = null;
 
-        try {
-            connection = DBConnection.getConnection();
-            connection.setAutoCommit(false);
-
-            String addressId = AddressRepository.insertAddress(address);
-
-            adminStmt = connection.prepareStatement(insertAdminSQL);
-            adminStmt.setString(1, admin.getAdminName());
-            adminStmt.setString(2, admin.getAdminEmail());
-            adminStmt.setString(3, admin.getAdminPassword());
-            adminStmt.setString(4, admin.getAdminContact());
-            adminStmt.setString(5, addressId);
-
-            adminStmt.executeUpdate();
-            connection.commit();
-
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error inserting admin", e);
-            try {
-                if (connection != null) connection.rollback();
-            } catch (SQLException ex) {
-                logger.log(Level.SEVERE, "Rollback failed", ex);
-            }
-        } finally {
-            DBConnection.closeStatement(adminStmt);
-            DBConnection.closeConnection(connection);
-        }
-    }
-
-    // Get Admin by Email
     public static Admin getAdminByEmail(String email) {
         String sql = "SELECT * FROM admin WHERE LOWER(admin_Email) = LOWER(?)";
 

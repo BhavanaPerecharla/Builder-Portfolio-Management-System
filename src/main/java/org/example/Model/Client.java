@@ -8,16 +8,20 @@ public class Client {
     private String clientContact;
     private String clientType;
     private String addressId;
+    private Address address;
 
     public Client() {}
 
-    public Client(String clientName, String clientEmail, String clientPassword, String clientContact, String clientType, String addressId) {
+    public Client(String clientId, String clientName, String clientEmail, String clientPassword,
+                  String clientContact, String clientType,String addressId, Address address) {
+        this.clientId = clientId;
         this.clientName = clientName;
         this.clientEmail = clientEmail;
         this.clientPassword = clientPassword;
         this.clientContact = clientContact;
         this.clientType = clientType;
-        this.addressId = addressId;
+        this.addressId=addressId;
+        this.address = address;
     }
 
     public String getClientId() {
@@ -74,5 +78,12 @@ public class Client {
 
     public void setAddressId(String addressId) {
         this.addressId = addressId;
+    }
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
     }
 }

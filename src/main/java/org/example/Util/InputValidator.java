@@ -1,6 +1,7 @@
 package org.example.Util;
 
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.Scanner;
@@ -24,6 +25,8 @@ public class InputValidator {
         }
         return input;
     }
+
+
 
     /**
      * Prompts user for a valid 10-digit contact number.
@@ -69,7 +72,19 @@ public class InputValidator {
         }
     }
 
-
+    public static boolean promptYesNo(Scanner sc, String prompt) {
+        while (true) {
+            System.out.print(prompt + " (Y/N): ");
+            String input = sc.nextLine().trim().toLowerCase();
+            if (input.equals("y") || input.equals("yes")) {
+                return true;
+            } else if (input.equals("n") || input.equals("no")) {
+                return false;
+            } else {
+                System.out.println("❌ Invalid input. Please enter Y or N.");
+            }
+        }
+    }
     public static BigDecimal promptValidAmount(Scanner sc, String prompt) {
         while (true) {
             System.out.print(prompt + ": ");

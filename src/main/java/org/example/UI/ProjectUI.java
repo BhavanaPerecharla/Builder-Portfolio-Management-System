@@ -20,6 +20,7 @@ public class ProjectUI {
             System.out.println("[4] Delete Project");
             System.out.println("[5] Add Payment for Project");
             System.out.println("[6] View Payments For Project");
+            System.out.println("[7] Manage Documents for Project");
             System.out.println("[0] Back to Dashboard");
             System.out.print("👉 Enter your choice: ");
             String choice = sc.nextLine().trim();
@@ -50,6 +51,19 @@ public class ProjectUI {
                     displayProjectSummary(builderEmail);
                     ProjectService.viewPaymentsForProject();
                     break;
+                case "7":
+                    displayProjectSummary(builderEmail);
+                    System.out.print("Enter Project ID to manage documents: ");
+                    String projectId = sc.nextLine().trim();
+
+                    if (!ProjectRepository.projectExists(projectId)) {  // Validate existence
+                        System.out.println("❌ Invalid Project ID.");
+                    } else {
+                        ProjectDocumentController docController = new ProjectDocumentController(projectId);  // Pass projectId
+                        docController.manageDocumentsForProject();
+                    }
+                    break;
+
                 case "0":
                     return;
 
@@ -58,6 +72,7 @@ public class ProjectUI {
             }
         }
     }
+
 
     // Method to display all projects for the builder
     private static void displayProjects(String builderEmail) {

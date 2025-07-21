@@ -13,46 +13,18 @@ import java.util.logging.Logger;
 
 public class ClientRepository {
     private static final Logger logger = Logger.getLogger(ClientRepository.class.getName());
+    private static ClientRepository instance;
 
-    // Insert Client (Address should already exist)
-    public void insertClient(Client client, Address address) {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-
-        try {
-            conn = DBConnection.getConnection();
-            conn.setAutoCommit(false);
-
-            String addressId = AddressRepository.insertAddress(address);  // ✅ Insert address via AddressRepository
-
-            String sql = "INSERT INTO client (client_Name, client_Email, client_Password, client_Contact, client_type, address_id) VALUES (?, ?, ?, ?, ?, ?)";
-            stmt = conn.prepareStatement(sql);
-
-            stmt.setString(1, client.getClientName());
-            stmt.setString(2, client.getClientEmail());
-            stmt.setString(3, client.getClientPassword());
-            stmt.setString(4, client.getClientContact());
-            stmt.setString(5, client.getClientType());
-            stmt.setString(6, addressId);
-
-            stmt.executeUpdate();
-            conn.commit();
-
-            logger.info("Client inserted successfully.");
-
-        } catch (SQLException e) {
-            try {
-                if (conn != null) conn.rollback();
-            } catch (SQLException rollbackEx) {
-                rollbackEx.printStackTrace();
-            }
-            logger.log(Level.SEVERE, "Error inserting client", e);
-        } finally {
-            DBConnection.closeStatement(stmt);
-            DBConnection.closeConnection(conn);
-        }
+    private ClientRepository() {
+        // private constructor to prevent instantiation
     }
 
+    public static ClientRepository getInstance() {
+        if (instance == null) {
+            instance = new ClientRepository();
+        }
+        return instance;
+    }
 
     // Get Client By Email
     public static Client getClientByEmail(String email) {
@@ -98,25 +70,46 @@ public class ClientRepository {
         return client;
     }
 
-    // Get All Clients
+
     public List<Client> getAllClients() {
         List<Client> clients = new ArrayList<>();
-        String sql = "SELECT * FROM client";
+        String query = "SELECT c.client_id, c.client_name, c.client_email, c.client_contact, c.client_type, " +
+                "a.address_id, a.address_Line1, a.city, a.states, a.zip_Code, a.country " +
+                "FROM client c JOIN address a ON c.address_id = a.address_id";
 
         try (Connection conn = DBConnection.getConnection();
              Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+             ResultSet rs = stmt.executeQuery(query)) {
 
             while (rs.next()) {
-                clients.add(mapResultSetToClient(rs));
+                Address address = new Address(
+                        rs.getString("address_Line1"),
+                        rs.getString("city"),
+                        rs.getString("states"),
+                        rs.getString("zip_Code"),
+                        rs.getString("country")
+                );
+                address.setAddressId(rs.getString("address_id"));
+
+                Client client = new Client();
+                client.setClientId(rs.getString("client_Id"));
+                client.setClientName(rs.getString("client_Name"));
+                client.setClientEmail(rs.getString("client_Email"));
+                client.setClientContact(rs.getString("client_Contact"));
+                client.setClientType(rs.getString("client_type"));
+                client.setAddress(address);
+
+                clients.add(client);
             }
 
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error fetching all clients", e);
+            logger.log(Level.SEVERE, "Error retrieving client details", e);
         }
 
         return clients;
     }
+
+
 
     public static boolean updateClient(Client client, Address address) {
         Connection conn = null;
@@ -153,7 +146,7 @@ public class ClientRepository {
             try {
                 if (conn != null) conn.rollback();
             } catch (SQLException rollbackEx) {
-                rollbackEx.printStackTrace();
+                logger.log(Level.SEVERE, "Error rolling back transaction", rollbackEx);
             }
             logger.log(Level.SEVERE, "Error updating client", e);
         } finally {
@@ -203,53 +196,6 @@ public class ClientRepository {
         }
     }
 
-    // Delete Client and Address (Transactional)
-    public static void deleteClient(String clientId) {
-        String fetchAddressQuery = "SELECT address_id FROM client WHERE client_Id = ?";
-        String deleteClientQuery = "DELETE FROM client WHERE client_Id = ?";
-
-        Connection conn = null;
-        PreparedStatement fetchStmt = null;
-        PreparedStatement deleteClientStmt = null;
-        ResultSet rs = null;
-
-        try {
-            conn = DBConnection.getConnection();
-            conn.setAutoCommit(false);
-
-            fetchStmt = conn.prepareStatement(fetchAddressQuery);
-            fetchStmt.setString(1, clientId);
-            rs = fetchStmt.executeQuery();
-
-            String addressId = null;
-            if (rs.next()) {
-                addressId = rs.getString("address_id");
-            }
-
-            deleteClientStmt = conn.prepareStatement(deleteClientQuery);
-            deleteClientStmt.setString(1, clientId);
-            deleteClientStmt.executeUpdate();
-
-            AddressRepository addressRepo = new AddressRepository();
-            addressRepo.deleteAddress(addressId);
-
-            conn.commit();
-
-        } catch (SQLException e) {
-            try {
-                if (conn != null) conn.rollback();
-            } catch (SQLException rollbackEx) {
-                rollbackEx.printStackTrace();
-            }
-            logger.log(Level.SEVERE, "Error deleting client", e);
-
-        } finally {
-            DBConnection.closeResultSet(rs);
-            DBConnection.closeStatement(fetchStmt);
-            DBConnection.closeStatement(deleteClientStmt);
-            DBConnection.closeConnection(conn);
-        }
-    }
 
     // Helper method
     private static Client mapResultSetToClient(ResultSet rs) throws SQLException {
