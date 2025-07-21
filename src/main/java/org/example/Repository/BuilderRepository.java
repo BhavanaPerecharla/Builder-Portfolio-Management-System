@@ -1,27 +1,31 @@
 package org.example.Repository;
 
+import org.example.Constants.BuilderSQLConstants;
+import org.example.Model.Address;
 import org.example.Model.Builder;
 import org.example.Util.DBConnection;
-import org.example.Model.Address;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
+/**
+ * Repository Layer: BuilderRepository
+ * Handles all database operations related to builders and their addresses.
+ * This class follows the Singleton pattern to ensure a single instance is used throughout the application.
+ */
 
 public class BuilderRepository {
+
     private static final Logger logger = Logger.getLogger(BuilderRepository.class.getName());
     private static BuilderRepository instance;
-    private BuilderRepository() {
 
-    }
+    // Private constructor to prevent instantiation
+    private BuilderRepository() {}
 
+    //  Singleton instance retrieval method
     public static BuilderRepository getInstance() {
         if (instance == null) {
             instance = new BuilderRepository();
@@ -29,40 +33,33 @@ public class BuilderRepository {
         return instance;
     }
 
-    // INSERT Builder and Address
+    // Get builder ID using email
     public static String getBuilderIdByEmail(String email) {
         String builderId = null;
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(
-                     "SELECT builder_id FROM builder WHERE builder_Email = ?")) {
+             PreparedStatement stmt = conn.prepareStatement(BuilderSQLConstants.GET_BUILDER_ID_BY_EMAIL)) {
             stmt.setString(1, email);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 builderId = rs.getString("builder_id");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error retrieving builder ID by email: " + email, e);
         }
         return builderId;
     }
 
 
-    // GET Builder by ID
+    // ✅ Get builder by ID (including address)
     public static Builder getBuilderById(String builderId) {
-        String query = "SELECT b.builder_id, b.builder_name, b.builder_email, b.builder_password, b.builder_contact, " +
-                "a.address_id, a.address_Line1, a.city, a.states, a.zip_Code, a.country " +
-                "FROM builder b JOIN address a ON b.address_id = a.address_id " +
-                "WHERE b.builder_id = ?";
-
-
+        Builder builder = null;
         Connection connection = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
-        Builder builder = null;
 
         try {
             connection = DBConnection.getConnection();
-            stmt = connection.prepareStatement(query);
+            stmt = connection.prepareStatement(BuilderSQLConstants.GET_BUILDER_BY_ID);
             stmt.setString(1, builderId);
             rs = stmt.executeQuery();
 
@@ -84,23 +81,25 @@ public class BuilderRepository {
                         rs.getString("address_id")
                 );
                 builder.setBuilderId(rs.getString("builder_id"));
+                builder.setAddress(address);
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error retrieving builder by ID: " + builderId, e);
+            // Optionally rethrow or handle the exception as needed
         } finally {
             DBConnection.closeResultSet(rs);
             DBConnection.closeStatement(stmt);
             DBConnection.closeConnection(connection);
         }
+
         return builder;
     }
 
-    // GET Builder by Email
+    // Get builder by email
     public static Builder getBuilderByEmail(String email) {
-        String query = "SELECT * FROM builder WHERE builder_Email = ?";
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(query)) {
+             PreparedStatement ps = conn.prepareStatement(BuilderSQLConstants.GET_BUILDER_BY_EMAIL)) {
 
             ps.setString(1, email);
             ResultSet rs = ps.executeQuery();
@@ -122,15 +121,9 @@ public class BuilderRepository {
         return null;
     }
 
-
-    // GET All Builders
+    // Get all builders (with addresses)
     public List<Builder> getAllBuilders() {
         List<Builder> builders = new ArrayList<>();
-        String query = "SELECT b.builder_id, b.builder_name, b.builder_email, b.builder_password, b.builder_contact, " +
-                "a.address_id, a.address_Line1, a.city, a.states, a.zip_Code, a.country " +
-                "FROM builder b JOIN address a ON b.address_id = a.address_id";
-
-
         Connection connection = null;
         Statement stmt = null;
         ResultSet rs = null;
@@ -138,7 +131,7 @@ public class BuilderRepository {
         try {
             connection = DBConnection.getConnection();
             stmt = connection.createStatement();
-            rs = stmt.executeQuery(query);
+            rs = stmt.executeQuery(BuilderSQLConstants.GET_ALL_BUILDERS);
 
             while (rs.next()) {
                 Address address = new Address(
@@ -150,24 +143,21 @@ public class BuilderRepository {
                 );
                 address.setAddressId(rs.getString("address_id"));
 
-
-                        Builder builder = new Builder(
+                Builder builder = new Builder(
                         rs.getString("builder_Name"),
                         rs.getString("builder_Email"),
                         rs.getString("builder_password"),
                         rs.getString("builder_Contact"),
                         rs.getString("address_id")
                 );
-
-
                 builder.setBuilderId(rs.getString("builder_id"));
+                builder.setAddress(address);
 
                 builders.add(builder);
             }
 
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error retrieving all builders", e);
-            e.printStackTrace();
         } finally {
             DBConnection.closeResultSet(rs);
             DBConnection.closeStatement(stmt);
@@ -177,9 +167,7 @@ public class BuilderRepository {
         return builders;
     }
 
-
-
-
+    // Update builder and address
     public static boolean updateBuilder(Builder builder) {
         if (builder == null) {
             throw new IllegalArgumentException("Builder cannot be null.");
@@ -196,44 +184,40 @@ public class BuilderRepository {
 
         try {
             connection = DBConnection.getConnection();
-            connection.setAutoCommit(false); // Start transaction
+            connection.setAutoCommit(false); // Transaction begins
 
-            // 1. Update builder details
-            String updateBuilderSQL = "UPDATE builder SET builder_name = ?, builder_email = ?, builder_password = ?, builder_contact = ? WHERE builder_id = ?";
-            updateBuilderStmt = connection.prepareStatement(updateBuilderSQL);
+            updateBuilderStmt = connection.prepareStatement(BuilderSQLConstants.UPDATE_BUILDER);
             updateBuilderStmt.setString(1, builder.getBuilderName());
             updateBuilderStmt.setString(2, builder.getBuilderEmail());
             updateBuilderStmt.setString(3, builder.getBuilderPassword());
             updateBuilderStmt.setString(4, builder.getBuilderContact());
             updateBuilderStmt.setString(5, builder.getBuilderId());
+
             int builderRows = updateBuilderStmt.executeUpdate();
 
-            // 2. Update address details
-            String updateAddressSQL = "UPDATE address SET address_line1 = ?, city = ?, States = ?, zip_Code = ?, country = ? WHERE address_id = ?";
-            updateAddressStmt = connection.prepareStatement(updateAddressSQL);
+            updateAddressStmt = connection.prepareStatement(BuilderSQLConstants.UPDATE_ADDRESS);
             updateAddressStmt.setString(1, builder.getAddress().getAddressLine1());
             updateAddressStmt.setString(2, builder.getAddress().getCity());
             updateAddressStmt.setString(3, builder.getAddress().getStates());
             updateAddressStmt.setString(4, builder.getAddress().getZipCode());
             updateAddressStmt.setString(5, builder.getAddress().getCountry());
             updateAddressStmt.setString(6, builder.getAddress().getAddressId());
+
             int addressRows = updateAddressStmt.executeUpdate();
 
             if (builderRows > 0 && addressRows > 0) {
-                connection.commit(); // ✅ Commit only if both updates succeed
+                connection.commit();
                 updated = true;
             } else {
-                connection.rollback(); // ❌ Rollback if any update fails
+                connection.rollback();
             }
         } catch (SQLException e) {
             try {
-                if (connection != null) {
-                    connection.rollback();
-                }
+                if (connection != null) connection.rollback();
             } catch (SQLException rollbackEx) {
-                rollbackEx.printStackTrace();
+                logger.log(Level.SEVERE, "Error rolling back transaction", rollbackEx);
             }
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error updating builder or address", e);
         } finally {
             DBConnection.closeStatement(updateBuilderStmt);
             DBConnection.closeStatement(updateAddressStmt);
@@ -243,13 +227,10 @@ public class BuilderRepository {
         return updated;
     }
 
-
-    // Update Builder Password
+    // Update only the password
     public static boolean updatePassword(String email, String hashedPassword) {
-        String sql = "UPDATE builder SET builder_password = ? WHERE builder_email = ?";
-
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(BuilderSQLConstants.UPDATE_PASSWORD)) {
 
             stmt.setString(1, hashedPassword);
             stmt.setString(2, email);
@@ -262,6 +243,4 @@ public class BuilderRepository {
             return false;
         }
     }
-
-
 }

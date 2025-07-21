@@ -11,6 +11,11 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Repository Layer: ClientRepository
+ * Handles all database operations related to clients and their addresses.
+ * This class follows the Singleton pattern to ensure a single instance is used throughout the application.
+ */
 public class ClientRepository {
     private static final Logger logger = Logger.getLogger(ClientRepository.class.getName());
     private static ClientRepository instance;
@@ -19,6 +24,7 @@ public class ClientRepository {
         // private constructor to prevent instantiation
     }
 
+    // Singleton instance retrieval method
     public static ClientRepository getInstance() {
         if (instance == null) {
             instance = new ClientRepository();
@@ -71,6 +77,7 @@ public class ClientRepository {
     }
 
 
+    // Get Client By ID with Address
     public List<Client> getAllClients() {
         List<Client> clients = new ArrayList<>();
         String query = "SELECT c.client_id, c.client_name, c.client_email, c.client_contact, c.client_type, " +
@@ -110,7 +117,7 @@ public class ClientRepository {
     }
 
 
-
+    // Update Client and Address
     public static boolean updateClient(Client client, Address address) {
         Connection conn = null;
         PreparedStatement updateClientStmt = null;
@@ -157,6 +164,7 @@ public class ClientRepository {
         return success;
     }
 
+    // Get Client ID by Email
     public static String getClientIdByEmail(String email) {
         String sql = "SELECT client_Id FROM client WHERE client_Email = ?";
 

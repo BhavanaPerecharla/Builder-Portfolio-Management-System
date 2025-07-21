@@ -1,6 +1,5 @@
 package org.example.Repository;
 
-
 import org.example.Model.Admin;
 import org.example.Model.Address;
 import org.example.Util.DBConnection;
@@ -9,12 +8,21 @@ import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Repository class responsible for interacting with the admin table in the database.
+ */
 public class AdminRepository {
+
     private static final Logger logger = Logger.getLogger(AdminRepository.class.getName());
 
-
+    /**
+     * Retrieves an Admin object based on email.
+     *
+     * @param email Admin email to look up.
+     * @return Admin object if found, otherwise null.
+     */
     public static Admin getAdminByEmail(String email) {
-        String sql = "SELECT * FROM admin WHERE LOWER(admin_Email) = LOWER(?)";
+        String sql = "SELECT * FROM admin WHERE LOWER(admin_email) = LOWER(?)";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -23,32 +31,32 @@ public class AdminRepository {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                System.out.println("[DEBUG] Admin found for email: " + email);
-
                 Admin admin = new Admin();
-                admin.setAdminId(rs.getString("admin_Id"));
-                admin.setAdminName(rs.getString("admin_Name"));
-                admin.setAdminEmail(rs.getString("admin_Email"));
-                admin.setAdminPassword(rs.getString("admin_Password"));
-                admin.setAdminContact(rs.getString("admin_Contact"));
+                admin.setAdminId(rs.getString("admin_id"));
+                admin.setAdminName(rs.getString("admin_name"));
+                admin.setAdminEmail(rs.getString("admin_email"));
+                admin.setAdminPassword(rs.getString("admin_password"));
+                admin.setAdminContact(rs.getString("admin_contact"));
                 admin.setAddressId(rs.getString("address_id"));
-
                 return admin;
-            } else {
-                System.out.println("[DEBUG] No Admin found for email: " + email);
             }
 
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error fetching admin by email", e);
+            logger.log(Level.SEVERE, "Error fetching admin by email: " + email, e);
         }
 
         return null;
     }
 
-
-    // Update Admin and Address
+    /**
+     * Updates admin and address details transactionally.
+     *
+     * @param admin   Updated Admin object.
+     * @param address Updated Address object.
+     * @return true if update is successful, false otherwise.
+     */
     public static boolean updateAdmin(Admin admin, Address address) {
-        String updateAdminSQL = "UPDATE admin SET admin_Name = ?, admin_Email = ?, admin_Password = ?, admin_Contact = ? WHERE admin_Id = ?";
+        String updateAdminSQL = "UPDATE admin SET admin_name = ?, admin_email = ?, admin_password = ?, admin_contact = ? WHERE admin_id = ?";
         Connection connection = null;
         PreparedStatement adminStmt = null;
         boolean updated = false;
@@ -65,7 +73,6 @@ public class AdminRepository {
             adminStmt.setString(5, admin.getAdminId());
 
             int adminRows = adminStmt.executeUpdate();
-
             boolean addressUpdated = AddressRepository.updateAddress(address);
 
             if (adminRows > 0 && addressUpdated) {
@@ -90,56 +97,16 @@ public class AdminRepository {
         return updated;
     }
 
-    // Delete Admin (and Address if needed)
-    public static void deleteAdmin(String adminId) {
-        String selectAddressIdSQL = "SELECT address_id FROM admin WHERE admin_Id = ?";
-        String deleteAdminSQL = "DELETE FROM admin WHERE admin_Id = ?";
-        Connection connection = null;
-        PreparedStatement selectStmt = null;
-        PreparedStatement deleteAdminStmt = null;
-        ResultSet rs = null;
 
-        try {
-            connection = DBConnection.getConnection();
-            connection.setAutoCommit(false);
-
-            selectStmt = connection.prepareStatement(selectAddressIdSQL);
-            selectStmt.setString(1, adminId);
-            rs = selectStmt.executeQuery();
-
-            String addressId = null;
-            if (rs.next()) {
-                addressId = rs.getString("address_id");
-            }
-
-            deleteAdminStmt = connection.prepareStatement(deleteAdminSQL);
-            deleteAdminStmt.setString(1, adminId);
-            deleteAdminStmt.executeUpdate();
-
-            if (addressId != null) {
-                AddressRepository.deleteAddress(addressId);
-            }
-
-            connection.commit();
-
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error deleting admin", e);
-            try {
-                if (connection != null) connection.rollback();
-            } catch (SQLException ex) {
-                logger.log(Level.SEVERE, "Rollback failed during delete", ex);
-            }
-        } finally {
-            DBConnection.closeResultSet(rs);
-            DBConnection.closeStatement(selectStmt);
-            DBConnection.closeStatement(deleteAdminStmt);
-            DBConnection.closeConnection(connection);
-        }
-    }
-
-    // Update Password Only
+    /**
+     * Updates password for the admin identified by email.
+     *
+     * @param email          Admin's email.
+     * @param hashedPassword New hashed password.
+     * @return true if update was successful, false otherwise.
+     */
     public static boolean updatePassword(String email, String hashedPassword) {
-        String sql = "UPDATE admin SET admin_Password = ? WHERE admin_Email = ?";
+        String sql = "UPDATE admin SET admin_password = ? WHERE admin_email = ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {

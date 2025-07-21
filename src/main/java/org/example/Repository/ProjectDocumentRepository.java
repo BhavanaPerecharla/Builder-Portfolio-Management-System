@@ -10,6 +10,11 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Repository Layer: ProjectDocumentRepository
+ * Handles all database operations related to project documents.
+ * This class provides methods to upload, retrieve, and delete project documents.
+ */
 public class ProjectDocumentRepository {
     private static final Logger logger = Logger.getLogger(ProjectDocumentRepository.class.getName());
 
@@ -27,7 +32,7 @@ public class ProjectDocumentRepository {
 
 
 
-
+    // Check if a project exists by its ID.
     public boolean projectExists(String projectId) {
         String sql = "SELECT 1 FROM project WHERE project_id = ?";
 

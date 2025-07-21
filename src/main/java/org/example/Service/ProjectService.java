@@ -2,6 +2,7 @@ package org.example.Service;
 
 import org.example.Model.Manager;
 import org.example.Model.Project;
+import org.example.Model.ProjectDocument;
 import org.example.Model.ProjectExpense;
 import org.example.Repository.*;
 import org.example.Util.InputValidator;
@@ -12,10 +13,20 @@ import java.util.List;
 import java.util.Scanner;
 
 
+/**
+ * Service class for managing projects.
+ * Provides methods to add, view, edit, and delete projects,
+ * as well as manage project documents and payments.
+ */
 public class ProjectService {
 
     private static final Scanner sc = new Scanner(System.in);
 
+    /**
+     * Adds a new project for the builder.
+     *
+     * @param builderEmail Email of the builder creating the project.
+     */
     public static void addProject(String builderEmail) {
         String builderId = BuilderRepository.getBuilderIdByEmail(builderEmail);
 
@@ -25,15 +36,13 @@ public class ProjectService {
         }
 
         System.out.println("\n📋===== Add New Project =====");
-
+       // Prompt for project details
         String projectName = InputValidator.promptNonEmpty(sc, "Enter Project Name");
         String projectDescription = InputValidator.promptNonEmpty(sc, "Enter Project Description");
         Date startDate = InputValidator.promptValidDate(sc, "Enter Start Date (YYYY-MM-DD)");
         Date estCompleteDate = InputValidator.promptValidDate(sc, "Enter Estimated Completion Date (YYYY-MM-DD)");
         Date actualCompleteDate = InputValidator.promptOptionalDate(sc, "Enter Actual Completion Date (YYYY-MM-DD)");
-
         String projectStatus = promptValidProjectStatus();
-
         String managerId = promptValidId("Enter Manager ID", "manager");
         String clientId = promptValidId("Enter Client ID", "client");
 
@@ -63,6 +72,46 @@ public class ProjectService {
             }
         }
     }
+
+    /**
+     * Views all documents uploaded for projects associated with a specific client.
+     * Displays project details along with the documents uploaded for each project.
+     *
+     * @param clientEmail Email of the client whose project documents are to be viewed.
+     */
+    public static void viewDocumentsForClientProjects(String clientEmail) {
+        List<Project> clientProjects = ProjectRepository.getProjectsByClientEmail(clientEmail);
+
+        if (clientProjects.isEmpty()) {
+            System.out.println("⚠️ You don't have any projects.");
+            return;
+        }
+
+        System.out.println("\n📋===== Project Documents =====");
+
+        for (Project project : clientProjects) {
+            System.out.println("\n📌 Project ID: " + project.getProjectId() + " | Project Name: " + project.getProjectName());
+
+            List<ProjectDocument> documents = ProjectDocumentRepository.getDocumentsByProjectId(project.getProjectId());
+
+            if (documents.isEmpty()) {
+                System.out.println("   ❌ No documents uploaded for this project.");
+            } else {
+                for (ProjectDocument doc : documents) {
+                    System.out.println("   📄 Document ID: " + doc.getDocumentId()
+                            + " | Name: " + doc.getFileName()
+                            + " | Type: " + doc.getFileType()
+                            + " | Uploaded On: " + doc.getUploadedOn());
+                }
+            }
+        }
+    }
+
+    /**
+     * Views and edits an existing project by its ID.
+     * Allows the user to modify various project details.
+     */
+
     public static void viewAndEditProject() {
         System.out.print("\nEnter the Project ID to view/edit (or type '0' to exit): ");
         String projectId = sc.nextLine().trim();
@@ -132,6 +181,11 @@ public class ProjectService {
         }
     }
 
+
+    /**
+     * Deletes a project by its ID.
+     * Prompts the user for confirmation before deletion.
+     */
     public static void deleteProjectByMenu() {
         System.out.print("\nEnter the Project ID to delete (or type '0' to exit): ");
         String projectId = sc.nextLine().trim();
@@ -156,6 +210,12 @@ public class ProjectService {
         }
     }
 
+    /**
+     * Prompts the user for a valid project status.
+     * Validates if the input is one of the allowed statuses.
+     *
+     * @return A valid project status (Upcoming, In Progress, Completed).
+     */
     private static String promptValidProjectStatus() {
         while (true) {
             System.out.print("Enter Project Status (Upcoming / In Progress / Completed): ");
@@ -170,6 +230,14 @@ public class ProjectService {
         }
     }
 
+    /**
+     * Prompts the user for a valid ID based on the specified table.
+     * Validates if the ID exists in the corresponding repository.
+     *
+     * @param prompt The prompt message to display.
+     * @param table  The table to check against (manager, client, builder).
+     * @return A valid ID from the specified table.
+     */
     private static String promptValidId(String prompt, String table) {
         while (true) {
             String id = InputValidator.promptNonEmpty(sc, prompt);
@@ -210,6 +278,13 @@ public class ProjectService {
             }
         }
     }
+
+    /**
+     * Views all payments made for projects associated with a specific client.
+     * Prompts the user for the client's email and displays all payments for their projects.
+     *
+     * @param clientEmail Email of the client whose project payments are to be viewed.
+     */
     public static void viewPaymentsForClientProjects(String clientEmail) {
         String clientId = ClientService.getClientIdByEmail(clientEmail);
         if (clientId == null) {
@@ -245,16 +320,31 @@ public class ProjectService {
 
         List<ProjectExpense> expenses = ProjectExpenseRepository.getExpensesByProjectId(projectId);
 
+
         if (expenses.isEmpty()) {
             System.out.println("💡 No payments recorded for this project.");
         } else {
-            System.out.println("\n💰 Payments for Project: " + projectId);
+            System.out.println("\n💰 ===== Payments for Project: " + selectedProject.getProjectName() + " (ID: " + projectId + ") =====");
+            System.out.printf("%-15s %-15s %-12s %s\n", "🧾 Payment ID", "📅 Date", "💵 Amount", "📝 Description");
+            System.out.println("--------------------------------------------------------------------------");
+
             for (ProjectExpense expense : expenses) {
-                System.out.println(expense.getPaymentDate() + " | ₹" + expense.getAmount() + " | " + expense.getPaymentDescription());
+                System.out.printf("%-15s %-15s ₹%-10.2f %s\n",
+                        expense.getPaymentId(),
+                        expense.getPaymentDate(),
+                        expense.getAmount(),
+                        expense.getPaymentDescription());
             }
         }
     }
 
+
+    /**
+     * Views all projects associated with a specific client by their email.
+     * Displays project details including ID, name, description, dates, status, and cost.
+     *
+     * @param clientEmail Email of the client whose projects are to be viewed.
+     */
     public static void viewProjectsByClientEmail(String clientEmail) {
         String clientId = ClientRepository.getClientIdByEmail(clientEmail);
 
@@ -289,6 +379,12 @@ public class ProjectService {
         }
     }
 
+    /**
+     * Views all projects assigned to a specific manager by their email.
+     * Displays projects categorized by their status (Upcoming, In Progress, Completed).
+     *
+     * @param managerEmail Email of the manager whose projects are to be viewed.
+     */
 
     public static void viewProjectsByManagerEmail(String managerEmail) {
         String managerId = ManagerRepository.getManagerIdByEmail(managerEmail);
@@ -309,6 +405,13 @@ public class ProjectService {
         displayProjectsByCategory(projects, "In Progress");
         displayProjectsByCategory(projects, "Completed");
     }
+
+    /**
+     * Displays projects based on their status category.
+     *
+     * @param projects       List of projects to filter and display.
+     * @param statusCategory The status category to filter by (e.g., "Upcoming", "In Progress", "Completed").
+     */
 
     private static void displayProjectsByCategory(List<Project> projects, String statusCategory) {
         System.out.println("\n📋===== " + statusCategory.toUpperCase() + " PROJECTS =====");
@@ -338,6 +441,12 @@ public class ProjectService {
             System.out.println("❌ No " + statusCategory.toLowerCase() + " projects found.\n");
         }
     }
+
+    /**
+     * Adds a payment for a specific project.
+     * Prompts the user for Project ID, payment date, amount, and description.
+     */
+
     public static void addPaymentForProject() {
         System.out.print("\nEnter Project ID to add payment: ");
         String projectId = sc.nextLine().trim();
@@ -359,7 +468,10 @@ public class ProjectService {
         }
     }
 
-
+    /**
+     * Views all payments made for a specific project.
+     * Prompts the user for the Project ID and displays all associated payments.
+     */
     public static void viewPaymentsForProject() {
         System.out.print("\n🔎 Enter Project ID to view payments: ");
         String projectId = sc.nextLine().trim();
@@ -386,7 +498,11 @@ public class ProjectService {
     }
 
 
-
+      /**
+     * Displays the details of a project.
+     *
+     * @param project The project to display.
+     */
 
     private static void showProjectDetails(Project project) {
         System.out.println("--------------------------------------------------");

@@ -11,13 +11,20 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Repository class for handling Manager-related database operations.
+ * Follows the Repository pattern as part of the Data Access Layer in a 3-layered architecture.
+ */
 public class ManagerRepository {
 
     private static final Logger logger = Logger.getLogger(ManagerRepository.class.getName());
     private static ManagerRepository instance;
 
+    // Singleton instance
     private ManagerRepository() {}
 
+
+    // Private constructor to prevent direct instantiation
     public static ManagerRepository getInstance() {
         if (instance == null) {
             instance = new ManagerRepository();
@@ -26,6 +33,10 @@ public class ManagerRepository {
     }
 
     // GET ALL MANAGERS (WITH ADDRESS)
+    /**
+     * Retrieves all managers along with their addresses.
+     * @return List of Manager objects.
+     */
     public List<Manager> getAllManagers() {
         List<Manager> managers = new ArrayList<>();
 
@@ -50,7 +61,7 @@ public class ManagerRepository {
                 Manager manager = new Manager(
                         rs.getString("manager_Name"),
                         rs.getString("manager_Email"),
-                        rs.getString("manager_password"),
+                        rs.getString("manager_Password"),
                         rs.getString("manager_Contact"),
                         rs.getString("pm_status"),
                         rs.getString("builder_id"),
@@ -68,37 +79,13 @@ public class ManagerRepository {
         return managers;
     }
 
-    // INSERT MANAGER (WITH ADDRESS)
-    public void insertManager(Manager manager, Address address) {
-        String insertManagerSQL = "INSERT INTO manager (manager_Name, manager_Email, manager_Password, manager_Contact, pm_status, builder_Id, address_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
-
-        try (Connection connection = DBConnection.getConnection()) {
-            connection.setAutoCommit(false);
-
-            String addressId = AddressRepository.insertAddress(address);
-
-            try (PreparedStatement stmt = connection.prepareStatement(insertManagerSQL)) {
-                stmt.setString(1, manager.getManagerName());
-                stmt.setString(2, manager.getManagerEmail());
-                stmt.setString(3, manager.getManagerPassword());
-                stmt.setString(4, manager.getManagerContact());
-                stmt.setString(5, manager.getPmStatus());
-                stmt.setString(6, manager.getBuilderId());
-                stmt.setString(7, addressId);
-
-                stmt.executeUpdate();
-                connection.commit();
-            } catch (SQLException e) {
-                connection.rollback();
-                throw e;
-            }
-
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error inserting manager", e);
-        }
-    }
 
     // GET MANAGER BY EMAIL
+    /**
+     * Retrieves a manager by their email.
+     * @param email Manager email
+     * @return Manager object or null
+     */
     public static Manager getManagerByEmail(String email) {
         String sql = "SELECT * FROM manager WHERE manager_Email = ?";
 
@@ -118,6 +105,12 @@ public class ManagerRepository {
         return null;
     }
 
+
+    /**
+     * Retrieves a manager by their ID.
+     * @param managerId Manager ID
+     * @return Manager object or null
+     */
     // GET MANAGER BY ID
     public static Manager getManagerById(String managerId) {
         String sql = "SELECT * FROM manager WHERE manager_Id = ?";
@@ -138,6 +131,12 @@ public class ManagerRepository {
         return null;
     }
 
+    /**
+     * Updates manager and corresponding address in a transaction.
+     * @param manager Manager object with updated data
+     * @param address Address object with updated data
+     * @return true if successful, false otherwise
+     */
     // UPDATE MANAGER (WITH ADDRESS)
     public static boolean updateManager(Manager manager, Address address) {
         String updateSQL = "UPDATE manager SET manager_Name = ?, manager_Email = ?, manager_Password = ?, manager_Contact = ?, pm_status = ?, builder_Id = ? WHERE manager_Id = ?";
@@ -172,39 +171,13 @@ public class ManagerRepository {
         }
     }
 
-    // DELETE MANAGER (AND ADDRESS)
-    public void deleteManager(String managerId) {
-        String selectAddressSQL = "SELECT address_id FROM manager WHERE manager_Id = ?";
-        String deleteManagerSQL = "DELETE FROM manager WHERE manager_Id = ?";
 
-        try (Connection connection = DBConnection.getConnection();
-             PreparedStatement selectStmt = connection.prepareStatement(selectAddressSQL);
-             PreparedStatement deleteStmt = connection.prepareStatement(deleteManagerSQL)) {
 
-            connection.setAutoCommit(false);
-
-            String addressId = null;
-
-            selectStmt.setString(1, managerId);
-            ResultSet rs = selectStmt.executeQuery();
-            if (rs.next()) {
-                addressId = rs.getString("address_id");
-            }
-
-            deleteStmt.setString(1, managerId);
-            deleteStmt.executeUpdate();
-
-            if (addressId != null) {
-                AddressRepository.deleteAddress(addressId);
-            }
-
-            connection.commit();
-
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error deleting manager", e);
-        }
-    }
-
+    /**
+     * Retrieves the manager ID associated with the given email.
+     * @param email Manager email
+     * @return manager_Id as String
+     */
     public static String getManagerIdByEmail(String email) {
         String sql = "SELECT manager_Id FROM manager WHERE manager_Email = ?";
 
@@ -226,6 +199,12 @@ public class ManagerRepository {
 
 
 
+    /**
+     * Updates the manager's password.
+     * @param email Manager email
+     * @param hashedPassword New hashed password
+     * @return true if updated, false otherwise
+     */
     // UPDATE PASSWORD
     public static boolean updatePassword(String email, String hashedPassword) {
         String sql = "UPDATE manager SET manager_Password = ? WHERE manager_Email = ?";
@@ -245,6 +224,11 @@ public class ManagerRepository {
         }
     }
 
+    /**
+     * Updates the manager's status (pm_status).
+     * @param manager Manager object with new status
+     * @return true if successful, false otherwise
+     */
     // UPDATE MANAGER STATUS
     public static boolean updateManagerStatus(Manager manager) {
         String sql = "UPDATE manager SET pm_status = ? WHERE manager_id = ?";
@@ -264,6 +248,12 @@ public class ManagerRepository {
         }
     }
 
+    /**
+     * Utility method to construct a Manager object from a ResultSet.
+     * @param rs ResultSet from query
+     * @return Manager object
+     * @throws SQLException if column parsing fails
+     */
     // HELPER METHOD
     private static Manager buildManagerFromResultSet(ResultSet rs) throws SQLException {
         Manager manager = new Manager();

@@ -17,6 +17,12 @@ import java.util.logging.Logger;
 public class ClientService {
     private static final Logger logger = Logger.getLogger(ClientService.class.getName());
 
+    /**
+     * Views the profile of a client identified by their email.
+     * Displays client details and associated address information.
+     *
+     * @param email The email of the client whose profile is to be viewed.
+     */
     public static void viewProfile(String email) {
         try {
             Client client = ClientRepository.getClientByEmail(email);
@@ -48,6 +54,13 @@ public class ClientService {
         }
     }
 
+
+    /**
+     * Edits the profile of a client identified by their email.
+     * Allows the user to update name, contact, client type, and address.
+     *
+     * @param email The email of the client whose profile is to be edited.
+     */
     public static void editProfile(String email) {
         Scanner sc = new Scanner(System.in);
 
@@ -108,6 +121,12 @@ public class ClientService {
     }
 
 
+    /**
+     * Changes the password for a client identified by their email.
+     * Prompts the user to enter a new password and updates it in the repository.
+     *
+     * @param email The email of the client whose password is to be changed.
+     */
 
     public static void changePassword(String email) {
         Scanner sc = new Scanner(System.in);

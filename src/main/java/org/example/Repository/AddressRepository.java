@@ -3,45 +3,26 @@ package org.example.Repository;
 import org.example.Model.Address;
 import org.example.Util.DBConnection;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
-
-
+/**
+ * Repository class to handle database operations related to Address.
+ * It provides methods to fetch and update address details.
+ */
 public class AddressRepository {
 
     private static final Logger logger = Logger.getLogger(AddressRepository.class.getName());
 
-    public static String insertAddress(Address address) throws SQLException {
-        String sql = "INSERT INTO address (addressLine, city, states, zipCode, country) VALUES (?, ?, ?, ?, ?)";
+    /**
+     * Retrieves an Address object from the database by its ID.
+     *
+     * @param addressId the unique ID of the address to retrieve
+     * @return an Address object if found, otherwise null
+     */
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
-            stmt.setString(1, address.getAddressLine1());
-            stmt.setString(2, address.getCity());
-            stmt.setString(3, address.getStates());
-            stmt.setString(4, address.getZipCode());
-            stmt.setString(5, address.getCountry());
-
-            stmt.executeUpdate();
-
-            ResultSet rs = stmt.getGeneratedKeys();
-            if (rs.next()) {
-                return rs.getString(1);  // return generated address_id
-            } else {
-                throw new SQLException("Address insertion failed.");
-            }
-        }
-    }
-    // READ - By ID
     public static Address getAddressById(String addressId) {
         String sql = "SELECT * FROM address WHERE address_Id = ?";
         Address address = null;
@@ -52,6 +33,7 @@ public class AddressRepository {
             stmt.setString(1, addressId);
             ResultSet rs = stmt.executeQuery();
 
+            // If a result is found, create and populate the Address object
             if (rs.next()) {
                 address = new Address();
                 address.setAddressId(rs.getString("address_Id"));
@@ -67,37 +49,19 @@ public class AddressRepository {
             logger.log(Level.SEVERE, "Error fetching address by ID", e);
         }
 
-        return address;
+        return address;  // Return the retrieved Address object or null
     }
 
-    public static void deleteAddress(String addressId) {
-        String sql = "DELETE FROM address WHERE address_id = ?";
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, addressId);
-            int rowsAffected = stmt.executeUpdate();
-
-            if (rowsAffected > 0) {
-                System.out.println("✅ Address deleted successfully (Address ID: " + addressId + ")");
-            } else {
-                System.out.println("⚠️ No address found with ID: " + addressId);
-            }
-
-        } catch (SQLException e) {
-            System.out.println("❌ Error deleting address: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
+    /**
+     * Updates an existing address in the database.
+     *
+     * @param address the Address object containing updated values
+     * @return true if the update was successful, false otherwise
+     */
 
     public static boolean updateAddress(Address address) {
-        if (address == null) {
-            return false;
-        }
-
-        String sql = "UPDATE address SET address_Line1 = ?, city = ?, states = ?, zip_Code = ?, country = ? WHERE address_Id = ?";
+        String sql = "UPDATE address SET addressLine = ?, city = ?, states = ?, zipCode = ?, country = ? WHERE address_Id = ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -112,11 +76,26 @@ public class AddressRepository {
             return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error updating address (ID: " + address.getAddressId() + ")", e);
-            return false;
+            logger.log(Level.SEVERE, "Error updating address", e);
         }
+        return false;
     }
 
-
-
+    /**
+     * Utility method to map a ResultSet row to an Address object.
+     *
+     * @param rs the ResultSet from a query
+     * @return an Address object containing the mapped data
+     * @throws SQLException if an error occurs during data extraction
+     */
+    private static Address mapResultSetToAddress(ResultSet rs) throws SQLException {
+        Address address = new Address();
+        address.setAddressId(rs.getString("address_Id"));
+        address.setAddressLine1(rs.getString("addressLine"));
+        address.setCity(rs.getString("city"));
+        address.setStates(rs.getString("states"));
+        address.setZipCode(rs.getString("zipCode"));
+        address.setCountry(rs.getString("country"));
+        return address;
+    }
 }

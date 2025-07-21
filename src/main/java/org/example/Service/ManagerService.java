@@ -16,9 +16,22 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
+/**
+ * Service Layer: ManagerService
+ * Handles business logic for manager operations such as viewing, editing profiles, and changing passwords.
+ * This class interacts with the ManagerRepository and AddressRepository to perform CRUD operations.
+ */
+
 public class ManagerService {
     private static final Logger logger = Logger.getLogger(ManagerService.class.getName());
 
+    /**
+     * View the profile of a manager by their email.
+     * Displays manager details and associated address information.
+     *
+     * @param email The email of the manager whose profile is to be viewed.
+     */
     public static void viewProfile(String email) {
         try {
             Manager manager = ManagerRepository.getManagerByEmail(email);

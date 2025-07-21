@@ -3,13 +3,16 @@ package org.example.UI;
 import org.example.Model.ProjectDocument;
 import org.example.Service.ProjectDocumentService;
 
-import java.awt.datatransfer.FlavorEvent;
 import java.io.*;
 import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Controller for managing project-related documents via CLI.
+ * Provides functionality to upload, download, list, and delete documents for a given project.
+ */
 public class ProjectDocumentController {
 
     private final ProjectDocumentService documentService;
@@ -17,6 +20,7 @@ public class ProjectDocumentController {
     private static final Logger logger = Logger.getLogger(ProjectDocumentController.class.getName());
     private final String projectId;
 
+    // Constructor initializes required services and scanner
     public ProjectDocumentController(String projectId) {
         this.documentService = new ProjectDocumentService();
         this.scanner = new Scanner(System.in);
@@ -24,7 +28,10 @@ public class ProjectDocumentController {
     }
 
 
-
+    /**
+     * Legacy entry point (unused in newer flows).
+     * Presents a general document management menu.
+     */
     public void start() {
         while (true) {
             System.out.println("\n===== Document Management Menu =====");
@@ -65,6 +72,9 @@ public class ProjectDocumentController {
         }
     }
 
+    /**
+     * CLI interface for managing documents for a specific project
+     */
     public void manageDocumentsForProject() {
         while (true) {
             System.out.println("\n===== Document Management for Project ID: " + projectId + " =====");
@@ -98,6 +108,9 @@ public class ProjectDocumentController {
         }
     }
 
+    /**
+     * Handles uploading a document to a project
+     */
 
     private void handleUpload() {
         try {
@@ -117,6 +130,7 @@ public class ProjectDocumentController {
             String fileType = getFileExtension(file);
             byte[] fileData = readFileBytes(file);
 
+            // Display confirmation before uploading
             System.out.println("\nYou're about to upload:");
             System.out.println("📄 File Name : " + fileName);
             System.out.println("📂 File Type : " + fileType);
@@ -129,6 +143,7 @@ public class ProjectDocumentController {
                 return;
             }
 
+            // Call service to persist document
             documentService.uploadDocument(projectId, fileName, fileType, fileData);
             System.out.println("✅ File uploaded successfully.");
 
@@ -139,6 +154,9 @@ public class ProjectDocumentController {
     }
 
 
+    /**
+     * Handles downloading a document for a given project
+     */
     private void handleDownload() {
         try {
             String projectId = promptValidProjectId();
@@ -175,7 +193,10 @@ public class ProjectDocumentController {
         }
     }
 
-    // Utility method
+    /**
+     * Lists all documents associated with a project
+     */
+
     private void listDocumentsForProject(String projectId) {
         List<ProjectDocument> documents = documentService.getDocumentsByProjectId(projectId);
 
@@ -193,6 +214,9 @@ public class ProjectDocumentController {
         }
     }
 
+    /**
+     * Wrapper method to list documents (via prompt for projectId)
+     */
 
     private void handleListDocuments() {
         try {
@@ -218,6 +242,10 @@ public class ProjectDocumentController {
         }
     }
 
+
+    /**
+     * Handles deletion of a document after user confirmation
+     */
     private void handleDelete() {
         try {
             String projectId = promptValidProjectId();
@@ -268,21 +296,43 @@ public class ProjectDocumentController {
     }
 
 
+
     // ==== Utility Methods ====
 
 
+    /**
+     * Reads the contents of a file and returns it as a byte array.
+     *
+     * @param file The file to read.
+     * @return A byte array containing the file data.
+     * @throws IOException If an I/O error occurs during reading.
+     */
     private byte[] readFileBytes(File file) throws IOException {
         try (FileInputStream fis = new FileInputStream(file)) {
             return fis.readAllBytes();
         }
     }
 
+    /**
+     * Writes byte array to a file at the specified destination path.
+     *
+     * @param destinationPath The full path where the file should be saved.
+     * @param fileData        The byte array containing file data.
+     * @throws IOException If an I/O error occurs during writing.
+     */
     private void writeFileBytes(String destinationPath, byte[] fileData) throws IOException {
         File file = new File(destinationPath);
         try (FileOutputStream fos = new FileOutputStream(file)) {
             fos.write(fileData);
         }
     }
+
+    /**
+     * Extracts the file extension from a File object.
+     *
+     * @param file The file to extract the extension from.
+     * @return The file extension or "unknown" if no extension exists.
+     */
 
     private String getFileExtension(File file) {
         String fileName = file.getName();
@@ -294,6 +344,13 @@ public class ProjectDocumentController {
         }
     }
 
+
+    /**
+     * Prompts user for a non-empty input.
+     *
+     * @param message The message to display when prompting for input.
+     * @return A non-empty string input from the user.
+     */
     private String promptNonEmpty(String message) {
         String input;
         while (true) {
@@ -306,6 +363,12 @@ public class ProjectDocumentController {
             }
         }
     }
+
+    /**
+     * Prompts user for a valid project ID and checks if it exists.
+     *
+     * @return A valid project ID if exists, null if maximum attempts reached.
+     */
     private String promptValidProjectId() {
         int attempts = 0;
         int maxAttempts = 4;
@@ -325,6 +388,13 @@ public class ProjectDocumentController {
         return null;
     }
 
+
+    /**
+     * Prompts user for a valid file path and checks if the file exists.
+     *
+     * @param message The message to display when prompting for the file path.
+     * @return A valid File object if the file exists, null if maximum attempts reached.
+     */
     private File promptValidFile(String message) {
         File file;
         int attempts = 0;
@@ -347,7 +417,12 @@ public class ProjectDocumentController {
         return null;
     }
 
-
+   /**
+     * Prompts user for a yes/no confirmation.
+     *
+     * @param prompt The message to display.
+     * @return true if user confirms, false otherwise.
+     */
     private boolean promptYesNo(String prompt) {
         while (true) {
             System.out.print(prompt + " (Y/N): ");

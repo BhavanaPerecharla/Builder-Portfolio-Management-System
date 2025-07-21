@@ -15,9 +15,20 @@ import java.util.logging.Logger;
 import static org.example.Util.InputValidator.promptNonEmpty;
 import static org.example.Util.InputValidator.promptValidContact;
 
+/**
+ * Service Layer: BuilderService
+ * Handles business logic related to builders, including profile viewing, editing, and password management.
+ * This class interacts with the BuilderRepository and AddressRepository for data operations.
+ */
 public class BuilderService {
     private static final Logger logger = Logger.getLogger(BuilderService.class.getName());
 
+    /**
+     * View the profile of a builder by their email.
+     * Displays builder details and associated address information.
+     *
+     * @param email The email of the builder whose profile is to be viewed.
+     */
     public static void viewProfile(String email) {
         try {
             Builder builder = BuilderRepository.getBuilderByEmail(email);
@@ -48,6 +59,13 @@ public class BuilderService {
             logger.log(Level.SEVERE, "Error viewing builder profile", e);
         }
     }
+
+    /**
+     * Edit the profile of a builder by their email.
+     * Allows updating name, contact, and address information.
+     *
+     * @param email The email of the builder whose profile is to be edited.
+     */
 
     public static void editProfile(String email) {
         Scanner sc = new Scanner(System.in);
@@ -119,6 +137,12 @@ public class BuilderService {
         }
     }
 
+    /**
+     * Change the password of a builder.
+     * Prompts for the current password and new password, validates them, and updates the password in the repository.
+     *
+     * @param email The email of the builder whose password is to be changed.
+     */
 
     public static void changePassword(String email) {
         Scanner sc = new Scanner(System.in);

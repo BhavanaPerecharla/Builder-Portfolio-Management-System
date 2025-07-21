@@ -5,6 +5,11 @@ import java.util.List;
 import org.example.Model.ProjectDocument;
 import org.example.Repository.ProjectDocumentRepository;
 
+/**
+ * Service Layer: ProjectDocumentService
+ * This class provides methods to manage project documents.
+ * It interacts with the ProjectDocumentRepository to perform CRUD operations.
+ */
 public class ProjectDocumentService {
 
     private final ProjectDocumentRepository documentRepository;

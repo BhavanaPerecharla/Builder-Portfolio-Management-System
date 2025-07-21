@@ -9,6 +9,11 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Repository Layer: ProjectExpenseRepository
+ * Handles all database operations related to project expenses.
+ * This class provides methods to insert and retrieve project expenses.
+ */
 public class ProjectExpenseRepository {
 
     private static final Logger logger = Logger.getLogger(ProjectExpenseRepository.class.getName());
@@ -32,6 +37,12 @@ public class ProjectExpenseRepository {
         }
     }
 
+    /**
+     * Retrieves all expenses for a given project ID, ordered by payment date.
+     *
+     * @param projectId The ID of the project for which expenses are to be retrieved.
+     * @return A list of ProjectExpense objects associated with the specified project ID.
+     */
     public static List<ProjectExpense> getExpensesByProjectId(String projectId) {
         List<ProjectExpense> expenses = new ArrayList<>();
 

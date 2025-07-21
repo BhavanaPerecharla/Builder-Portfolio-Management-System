@@ -287,6 +287,7 @@ public class ProjectRepository {
         return projects;
     }
 
+
     public static boolean projectExists(String projectId) {
         String sql = "SELECT 1 FROM project WHERE project_id = ?";
 
@@ -306,6 +307,11 @@ public class ProjectRepository {
     }
 
 
+    /**
+     * Retrieves all projects from the database.
+     *
+     * @return List of all projects
+     */
     private static Project mapProject(ResultSet rs) throws SQLException {
         Project project = new Project();
 

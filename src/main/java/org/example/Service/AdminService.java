@@ -13,9 +13,19 @@ import java.util.logging.Logger;
 import static org.example.Util.InputValidator.promptNonEmpty;
 import static org.example.Util.InputValidator.promptValidContact;
 
+
+/**
+ * Service class to manage all admin functionalities such as viewing/editing profile,
+ * managing users (builders, managers, clients), and password operations.
+ */
+
 public class AdminService {
     private static final Logger logger = Logger.getLogger(AdminService.class.getName());
+    private static final Scanner sc = new Scanner(System.in);
 
+    /**
+     * Displays admin profile details based on email.
+     */
     public static void viewProfile(String email) {
         try {
             Admin admin = AdminRepository.getAdminByEmail(email);
@@ -27,17 +37,13 @@ public class AdminService {
             Address address = AddressRepository.getAddressById(admin.getAddressId());
 
             System.out.println("\n👤===== Admin Profile =====");
-            System.out.println("🔹 Name: " + admin.getAdminName());
-            System.out.println("🔹 Email: " + admin.getAdminEmail());
-            System.out.println("🔹 Contact: " + admin.getAdminContact());
+            System.out.printf("🔹 Name   : %s%n", admin.getAdminName());
+            System.out.printf("🔹 Email  : %s%n", admin.getAdminEmail());
+            System.out.printf("🔹 Contact: %s%n", admin.getAdminContact());
 
             if (address != null) {
                 System.out.println("🏠 Address:");
-                System.out.println("   - Line1: " + address.getAddressLine1());
-                System.out.println("   - City: " + address.getCity());
-                System.out.println("   - State: " + address.getStates());
-                System.out.println("   - Zip: " + address.getZipCode());
-                System.out.println("   - Country: " + address.getCountry());
+                printAddress(address);
             } else {
                 System.out.println("⚠️ Address not found.");
             }
@@ -46,45 +52,94 @@ public class AdminService {
         }
     }
 
+
+    /**
+     * Displays all managers in the system.
+     */
     public static void viewAllManagers() {
         List<Manager> managers = ManagerRepository.getInstance().getAllManagers();
-
         if (managers.isEmpty()) {
-            System.out.println("⚠️  No managers found.");
+            System.out.println("⚠️ No managers found.");
             return;
         }
 
         System.out.println("\n👷 All Managers Details:");
-        for (Manager manager : managers) {
+        for (Manager m : managers) {
             System.out.println("-------------------------------------");
-            System.out.println("🆔 Manager ID     : " + manager.getManagerId());
-            System.out.println("👤 Name           : " + manager.getManagerName());
-            System.out.println("📧 Email          : " + manager.getManagerEmail());
-            System.out.println("📞 Contact        : " + manager.getManagerContact());
-            System.out.println("📋 PM Status      : " + manager.getPmStatus());
-            System.out.println("🏗️  Builder ID    : " + manager.getBuilderId());
+            System.out.printf("🆔 ID         : %s%n", m.getManagerId());
+            System.out.printf("👤 Name       : %s%n", m.getManagerName());
+            System.out.printf("📧 Email      : %s%n", m.getManagerEmail());
+            System.out.printf("📞 Contact    : %s%n", m.getManagerContact());
+            System.out.printf("📋 PM Status  : %s%n", m.getPmStatus());
+            System.out.printf("🏗️ Builder ID : %s%n", m.getBuilderId());
 
-            // Fetch Address (optional, if Address object is linked)
-            Address address = AddressRepository.getAddressById(manager.getAddressId());
+            Address address = AddressRepository.getAddressById(m.getAddressId());
             if (address != null) {
                 System.out.println("🏠 Address:");
-                System.out.println("   - Line1   : " + address.getAddressLine1());
-                System.out.println("   - City    : " + address.getCity());
-                System.out.println("   - State   : " + address.getStates());
-                System.out.println("   - Zip     : " + address.getZipCode());
-                System.out.println("   - Country : " + address.getCountry());
+                printAddress(address);
             } else {
                 System.out.println("🏠 Address    : Not Available");
             }
         }
-
-        System.out.println("-------------------------------------");
     }
 
-    public static void editProfile(String email) {
-        viewProfile(email); // Show current profile before editing
-        Scanner sc = new Scanner(System.in);
+    /**
+     * Displays all builders in the system.
+     */
+    public static void viewAllBuilders() {
+        List<Builder> builders = BuilderRepository.getInstance().getAllBuilders();
+        if (builders.isEmpty()) {
+            System.out.println("⚠️ No builders found.");
+            return;
+        }
 
+        System.out.println("\n🏗️===== List of Builders =====");
+        for (Builder b : builders) {
+            System.out.println("------------------------------------------");
+            System.out.printf("🆔 Builder ID : %s%n", b.getBuilderId());
+            System.out.printf("👷 Name       : %s%n", b.getBuilderName());
+            System.out.printf("📧 Email      : %s%n", b.getBuilderEmail());
+            System.out.printf("📞 Contact    : %s%n", b.getBuilderContact());
+
+            Address address = b.getAddress();
+            if (address != null) {
+                System.out.println("🏠 Address:");
+                printAddress(address);
+            } else {
+                System.out.println("🏠 Address    : Not Available");
+            }
+        }
+    }
+
+    // Lists all client records with associated details
+    public static void viewAllClients() {
+        List<Client> clients = ClientRepository.getInstance().getAllClients();
+        if (clients.isEmpty()) {
+            System.out.println("⚠️ No clients found.");
+            return;
+        }
+
+        System.out.println("\n📋===== All Clients =====");
+        for (Client c : clients) {
+            System.out.println("--------------------------------------------");
+            System.out.printf("🆔 Client ID : %s%n", c.getClientId());
+            System.out.printf("👤 Name      : %s%n", c.getClientName());
+            System.out.printf("📧 Email     : %s%n", c.getClientEmail());
+            System.out.printf("📞 Contact   : %s%n", c.getClientContact());
+            System.out.printf("🏷️ Type      : %s%n", c.getClientType());
+
+            Address address = c.getAddress();
+            if (address != null) {
+                System.out.println("🏠 Address:");
+                printAddress(address);
+            } else {
+                System.out.println("🏠 Address    : Not Available");
+            }
+        }
+    }
+
+    // Allows the admin to edit their profile details-including name, contact, email, and address
+    public static void editProfile(String email) {
         try {
             Admin admin = AdminRepository.getAdminByEmail(email);
             if (admin == null) {
@@ -124,10 +179,9 @@ public class AdminService {
                     case "4":
                         AddressEditor.editAddress(sc, address);
                         break;
-
                     case "0":
-                        boolean updated = AdminRepository.updateAdmin(admin, address);
-                        if (updated) {
+
+                        if (AdminRepository.updateAdmin(admin, address)) {
                             System.out.println("✅ Profile updated successfully!");
                         } else {
                             System.out.println("❌ Failed to update profile.");
@@ -137,104 +191,38 @@ public class AdminService {
                         System.out.println("❌ Invalid choice.");
                 }
             }
-
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error editing admin profile", e);
         }
     }
 
+    // Allows the admin to change their password securely
     public static void changePassword(String email) {
-        Scanner sc = new Scanner(System.in);
-
         try {
+
             Admin admin = AdminRepository.getAdminByEmail(email);
             if (admin == null) {
                 System.out.println("❌ Admin not found.");
                 return;
             }
-
-            String hashedNewPassword = PasswordManager.handlePasswordChange(sc, admin.getAdminPassword());
-
-            if (hashedNewPassword != null) {
-                admin.setAdminPassword(hashedNewPassword);
-
-                boolean updated = AdminRepository.updatePassword(email, hashedNewPassword);
-                if (updated) {
-                    System.out.println("✅ Password changed successfully.");
-                } else {
-                    System.out.println("❌ Failed to change password.");
-                }
+            // PasswordManager handles confirmation, validation, and hashing
+            String hashedPassword = PasswordManager.handlePasswordChange(sc, admin.getAdminPassword());
+            if (hashedPassword != null) {
+                admin.setAdminPassword(hashedPassword);
+                boolean success = AdminRepository.updatePassword(email, hashedPassword);
+                System.out.println(success ? "✅ Password changed successfully." : "❌ Failed to change password.");
             }
-
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error changing admin password", e);
         }
     }
 
-    public static void viewAllBuilders() {
-        List<Builder> builders = BuilderRepository.getInstance().getAllBuilders();
-
-        if (builders.isEmpty()) {
-            System.out.println("⚠️ No builders found.");
-            return;
-        }
-
-        System.out.println("\n🏗️===== List of Builders =====");
-
-        for (Builder builder : builders) {
-            System.out.println("------------------------------------------");
-            System.out.println("🆔 Builder ID     : " + builder.getBuilderId());
-            System.out.println("👷 Name           : " + builder.getBuilderName());
-            System.out.println("📧 Email          : " + builder.getBuilderEmail());
-            System.out.println("📞 Contact        : " + builder.getBuilderContact());
-
-            Address address = builder.getAddress();  // Assuming Builder holds Address object
-            if (address != null) {
-                System.out.println("🏠 Address Line   : " + address.getAddressLine1());
-                System.out.println("🏙️ City          : " + address.getCity());
-                System.out.println("🌆 State         : " + address.getStates());
-                System.out.println("📮 ZIP Code      : " + address.getZipCode());
-                System.out.println("🌏 Country       : " + address.getCountry());
-            } else {
-                System.out.println("🏠 Address        : Not Available");
-            }
-        }
-
-        System.out.println("------------------------------------------");
+    // Helper method to display address details in a formatted way
+    private static void printAddress(Address address) {
+        System.out.printf("   - Line1   : %s%n", address.getAddressLine1());
+        System.out.printf("   - City    : %s%n", address.getCity());
+        System.out.printf("   - State   : %s%n", address.getStates());
+        System.out.printf("   - Zip     : %s%n", address.getZipCode());
+        System.out.printf("   - Country : %s%n", address.getCountry());
     }
-
-    public static void viewAllClients() {
-        List<Client> clients = ClientRepository.getInstance().getAllClients();
-
-        if (clients.isEmpty()) {
-            System.out.println("⚠️ No clients found.");
-            return;
-        }
-
-        System.out.println("\n📋===== All Clients =====");
-
-        for (Client client : clients) {
-            System.out.println("--------------------------------------------");
-            System.out.println("🆔 Client ID    : " + client.getClientId());
-            System.out.println("👤 Name         : " + client.getClientName());
-            System.out.println("📧 Email        : " + client.getClientEmail());
-            System.out.println("📞 Contact      : " + client.getClientContact());
-            System.out.println("🏷️ Type         : " + client.getClientType());
-
-            if (client.getAddress() != null) {
-                System.out.println("🏠 Address:");
-                System.out.println("   " + client.getAddress().getAddressLine1());
-                System.out.println("   " + client.getAddress().getCity() + ", " +
-                        client.getAddress().getStates() + " - " +
-                        client.getAddress().getZipCode());
-                System.out.println("   " + client.getAddress().getCountry());
-            } else {
-                System.out.println("🏠 Address: Not Available");
-            }
-            System.out.println("--------------------------------------------");
-        }
-    }
-
-
-
 }
