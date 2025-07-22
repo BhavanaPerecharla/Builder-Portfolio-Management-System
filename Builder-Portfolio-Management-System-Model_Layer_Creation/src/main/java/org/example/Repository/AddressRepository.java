@@ -61,7 +61,7 @@ public class AddressRepository {
      */
 
     public static boolean updateAddress(Address address) {
-        String sql = "UPDATE address SET addressLine = ?, city = ?, states = ?, zipCode = ?, country = ? WHERE address_Id = ?";
+        String sql = "UPDATE address SET address_Line1 = ?, city = ?, states = ?, zipCode = ?, country = ? WHERE address_Id = ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -91,7 +91,7 @@ public class AddressRepository {
     private static Address mapResultSetToAddress(ResultSet rs) throws SQLException {
         Address address = new Address();
         address.setAddressId(rs.getString("address_Id"));
-        address.setAddressLine1(rs.getString("addressLine"));
+        address.setAddressLine1(rs.getString("address_Line1"));
         address.setCity(rs.getString("city"));
         address.setStates(rs.getString("states"));
         address.setZipCode(rs.getString("zipCode"));
