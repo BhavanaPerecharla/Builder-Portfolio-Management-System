@@ -35,10 +35,12 @@ The **Builder Portfolio Management System** is a **role-based Java application**
 ✅ 1. Clone the Repository
 
 git clone https://github.com/BhavanaPerecharla/Builder-Portfolio-Management-System
+
 cd BuilderPortfolioManagementSystem
 
 
  ✅ 2. Set Up PostgreSQL Database
+ 
 Ensure PostgreSQL is installed and running.
 
 Open PostgreSQL terminal (psql).
@@ -48,34 +50,43 @@ CREATE DATABASE test;
 
 
 ✅ 3. Configure Database Credentials
+
 Open this file:
 
 src/main/java/com/resources/DBProperties.java
+
 
 Update your PostgreSQL credentials:
 
 public class DBConstants {
     public static final String DB_URL = "jdbc:postgresql://localhost:5432/test";
+    
     public static final String DB_USERNAME = "your_postgres_username";
+    
     public static final String DB_PASSWORD = "your_postgres_password";
 }
 
 ✅ 4. Execute SQL Setup Script
 Locate the queries.sql file.
 
+
 In PostgreSQL terminal, run:
 
+
 \i /path/to/queries.sql
+
 
 Or manually paste the SQL commands into the terminal after connecting to the test database.
 
 
 ✅ 5. Build the Project
 In the project’s root directory, execute:
+
 mvn clean install
 
 ✅ 6. Run the Project
 Option 1: Using IDE
+
 Open the project in IntelliJ IDEA, Eclipse, etc.
 
 
