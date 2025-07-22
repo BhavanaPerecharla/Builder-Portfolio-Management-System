@@ -30,14 +30,15 @@ The **Builder Portfolio Management System** is a **role-based Java application**
 
 ## 📋 How to Set Up and Run the Project Locally
 
-### ✅ 1. Clone the Repository
 
-```bash
+
+✅ 1. Clone the Repository
+
 git clone https://github.com/BhavanaPerecharla/Builder-Portfolio-Management-System
 cd BuilderPortfolioManagementSystem
 
 
-✅ 2. Set Up PostgreSQL Database
+ ✅ 2. Set Up PostgreSQL Database
 Ensure PostgreSQL is installed and running.
 
 Open PostgreSQL terminal (psql).
@@ -76,6 +77,9 @@ mvn clean install
 ✅ 6. Run the Project
 Option 1: Using IDE
 Open the project in IntelliJ IDEA, Eclipse, etc.
+
+
+
 
 Locate and run the Main class.
 -----------------------------------------------------
