@@ -46,6 +46,7 @@ Ensure PostgreSQL is installed and running.
 Open PostgreSQL terminal (psql).
 
 CREATE DATABASE test;
+
 \c test
 
 
@@ -59,14 +60,17 @@ src/main/java/com/resources/DBProperties.java
 Update your PostgreSQL credentials:
 
 public class DBConstants {
+
     public static final String DB_URL = "jdbc:postgresql://localhost:5432/test";
     
     public static final String DB_USERNAME = "your_postgres_username";
     
     public static final String DB_PASSWORD = "your_postgres_password";
+    
 }
 
 ✅ 4. Execute SQL Setup Script
+
 Locate the queries.sql file.
 
 
@@ -80,11 +84,13 @@ Or manually paste the SQL commands into the terminal after connecting to the tes
 
 
 ✅ 5. Build the Project
+
 In the project’s root directory, execute:
 
 mvn clean install
 
 ✅ 6. Run the Project
+
 Option 1: Using IDE
 
 Open the project in IntelliJ IDEA, Eclipse, etc.
@@ -95,7 +101,9 @@ Open the project in IntelliJ IDEA, Eclipse, etc.
 Locate and run the Main class.
 -----------------------------------------------------
 🎉 Application should now be running locally!
+
 📌 Important Notes
+
 Ensure PostgreSQL server is running before starting the system.
 
 Password hashing and encryption utilities are handled via Maven dependencies.
@@ -103,8 +111,8 @@ Password hashing and encryption utilities are handled via Maven dependencies.
 ------------------------------------------------------
 👤 Author
 Bhavana Perecharla
-📧 bhavanaperecharla@gmail.com
-📍 Guntur, Andhra Pradesh, India
 
+bhavanaperecharla@gmail.com
 
+Guntur, Andhra Pradesh, India
 
