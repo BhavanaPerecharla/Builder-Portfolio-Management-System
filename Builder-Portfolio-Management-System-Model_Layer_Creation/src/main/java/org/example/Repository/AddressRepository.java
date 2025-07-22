@@ -94,7 +94,7 @@ public class AddressRepository {
         address.setAddressLine1(rs.getString("address_Line1"));
         address.setCity(rs.getString("city"));
         address.setStates(rs.getString("states"));
-        address.setZipCode(rs.getString("zipCode"));
+        address.setZipCode(rs.getString("zip_Code"));
         address.setCountry(rs.getString("country"));
         return address;
     }
