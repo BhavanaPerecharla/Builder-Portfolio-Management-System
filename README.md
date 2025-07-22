@@ -1,137 +1,95 @@
-# Builder-Portfolio-Management-System
+# 🏗️ Builder Portfolio Management System
 
-The local Builders' Association has requested a system to manage their construction projects portfolio. Currently, records of ongoing, completed, and upcoming projects are maintained manually using spreadsheets, leading to frequent data loss, errors, and poor client communication. 
+The local Builders' Association requested a system to manage their construction projects portfolio. Previously, project records were maintained manually using spreadsheets, leading to frequent data loss, human errors, and poor client communication.
 
+The **Builder Portfolio Management System** is a **role-based Java application** designed to streamline operations for builders, project managers, and clients. This system enables builders to manage construction projects digitally, reducing data loss while improving coordination, budgeting, and project tracking.
 
-The Builder Portfolio Management System is a role-based web application designed to streamline the operations of builders, project managers, and clients. The system allows builders to manage construction projects digitally, reducing the risk of data loss and improving coordination, budgeting, and progress tracking.
+---
 
+## 🚀 System Features
 
-The System Features:  
+- ✅ Register and log in (Role-based: Admin, Builder, Client, Manager)
+- ✅ Add, update, and delete project entries
+- ✅ Assign project status: Upcoming, In Progress, or Completed
+- ✅ Associate projects with clients and project managers
+- ✅ Upload documents (blueprints, permits, images)
+- ✅ Track budget vs actual spending
 
-1.Register and log in. 
+---
 
-2.Add, update, and delete project entries. 
+## ⚙️ Tech Stack
 
-3.Assign project status: Upcoming, In Progress, or Completed. 
+- **Language:** Java
+- **Database:** PostgreSQL
+- **Database Connectivity:** JDBC
+- **Build Tool:** Maven
+- **IDE:** IntelliJ IDEA / Eclipse
+- **Execution:** Console-based / CLI interaction
 
-4.Associate projects with clients and project managers. 
+---
 
-5.Upload relevant documents like blueprints, permits, and images. 
+## 📋 How to Set Up and Run the Project Locally
 
-6.Track budget vs actual spends on projects. 
+### ✅ 1. Clone the Repository
 
-
-
-
--------------⚙️ Tech Stack:----------------
-
-1.Language: Java
-
-2.Database: PostgreSQL
-
-3.Database Connectivity: JDBC
-
-4.Build Tool: Maven
-
-5.IDE: IntelliJ IDEA / Eclipse
-
-6.Execution: Console-based / CLI interaction or API-less logic simulation
-
--------------How to Set Up and Run Builder Portfolio Management System Locally------------
-
-📋 How to Set Up and Run Builder Portfolio Management System Locally
-Follow these steps to clone, configure, and run the system on your local machine.
-
-✅ 1. Clone the Repository
-Use the following commands to clone the repository and navigate into the project directory:
-
-bash
-Copy
-Edit
-git clone https://github.com/KattaPraneeth/BuilderPortfolioManagementSystem.git
+```bash
+git clone https://github.com/BhavanaPerecharla/Builder-Portfolio-Management-System
 cd BuilderPortfolioManagementSystem
+
+
 ✅ 2. Set Up PostgreSQL Database
-Ensure PostgreSQL is installed and running on your machine.
+Ensure PostgreSQL is installed and running.
 
-Open the PostgreSQL terminal (psql).
+Open PostgreSQL terminal (psql).
 
-Execute the following commands to create and connect to the database:
-
-sql
-Copy
-Edit
 CREATE DATABASE test;
 \c test
+
+
 ✅ 3. Configure Database Credentials
-Open the following file in your IDE or text editor:
+Open this file:
 
-swift
-Copy
-Edit
-src/main/java/com/praneeth/Constants/DBConstants.java
-Update the database connection details:
+src/main/java/com/resources/DBProperties.java
 
-java
-Copy
-Edit
+Update your PostgreSQL credentials:
+
 public class DBConstants {
     public static final String DB_URL = "jdbc:postgresql://localhost:5432/test";
     public static final String DB_USERNAME = "your_postgres_username";
     public static final String DB_PASSWORD = "your_postgres_password";
 }
-Replace your_postgres_username and your_postgres_password with your actual PostgreSQL credentials.
 
 ✅ 4. Execute SQL Setup Script
-Locate the queries.sql file in your project.
+Locate the queries.sql file.
 
-Use the \i command in the PostgreSQL terminal to execute the SQL script:
+In PostgreSQL terminal, run:
 
-sql
-Copy
-Edit
 \i /path/to/queries.sql
-Alternatively, copy-paste the SQL commands from queries.sql directly into your terminal after connecting to the test database.
+
+Or manually paste the SQL commands into the terminal after connecting to the test database.
+
 
 ✅ 5. Build the Project
-From your project’s root directory, run the following Maven command to build and install dependencies:
-
-bash
-Copy
-Edit
+In the project’s root directory, execute:
 mvn clean install
-Ensure Maven is installed on your system.
 
 ✅ 6. Run the Project
-Option 1: Using an IDE
-Open the project in IntelliJ IDEA, Eclipse, or any Java IDE.
+Option 1: Using IDE
+Open the project in IntelliJ IDEA, Eclipse, etc.
 
-Locate the Main class (containing the main method).
+Locate and run the Main class.
+-----------------------------------------------------
+🎉 Application should now be running locally!
+📌 Important Notes
+Ensure PostgreSQL server is running before starting the system.
 
-Run the application directly from the IDE.
+Password hashing and encryption utilities are handled via Maven dependencies.
 
-Option 2: Using Terminal
-If running from the command line:
-
-bash
-Copy
-Edit
-javac Main.java
-java Main
-Make sure you compile all necessary .java files if you're not using an IDE.
-
-🎉 The application should now be running locally.
-📌 Notes
-Ensure your PostgreSQL server is running before starting the project.
-
-If using features like password hashing, ensure required libraries are included (already handled via Maven if using the project’s pom.xml).
-
-
-
-
------------👤 Author:- --------------------
-
+------------------------------------------------------
+👤 Author
 Bhavana Perecharla
+📧 bhavanaperecharla@gmail.com
+📍 Guntur, Andhra Pradesh, India
 
-bhavanaperecharla@gmail.com
 
-Guntur, Andhra Pradesh, India
+
