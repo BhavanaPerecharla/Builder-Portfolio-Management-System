@@ -56,68 +56,39 @@ public class LoginUI {
      */
 
     public static void performLogin(Scanner sc) {
-        System.out.println("\n🔐===== Login =====");
+    System.out.println("\n🔐===== Login =====");
 
+    System.out.print("Enter Email: ");
+    String email = sc.nextLine().trim();
 
-        // Step 1: Role selection and validation
-        Role role = null;
-        while (role == null) {
-            System.out.print("Enter Role (Admin/Builder/Client/Manager): ");
-            String roleInput = sc.nextLine().trim();
-            role = Role.fromString(roleInput);
+    UserRoleInfo userInfo = LoginService.findUserByEmail(email);
 
-            if (role == null) {
-                System.out.println("❌ Invalid role. Please enter Admin, Builder, Client, or Manager.");
-            }
-        }
+    if (userInfo == null) {
+        System.out.println("❌ No account found with this email.");
+        return;
+    }
 
-        // Step 2: Email verification
-        String email = "";
-        int emailAttempts = 3;
+    // Step 2: Password authentication
+    int passwordAttempts = 3;
+    while (passwordAttempts > 0) {
+        System.out.print("Enter Password: ");
+        String inputPassword = sc.nextLine().trim();
 
-        while (emailAttempts > 0) {
-            System.out.print("Enter Email: ");
-            email = sc.nextLine().trim();
-
-            if (LoginService.emailExists(email, role)) {
-                break;
+        if (PasswordManager.verifyPassword(inputPassword, userInfo.getPassword())) {
+            System.out.println("✅ Login Successful! Welcome, " + userInfo.getName() + " (" + userInfo.getRole().name() + ")");
+            launchDashboard(userInfo.getRole(), email);
+            return;
+        } else {
+            passwordAttempts--;
+            System.out.println("❌ Incorrect password.");
+            if (passwordAttempts > 0) {
+                System.out.println("🔁 Attempts remaining: " + passwordAttempts);
             } else {
-                emailAttempts--;
-                System.out.println("❌ Email not found for role: " + role.name());
-                if (emailAttempts > 0) {
-                    System.out.println("🔁 Attempts remaining: " + emailAttempts);
-                } else {
-                    System.out.println("🚫 Too many failed attempts. Returning to main menu.");
-                    return;
-                }
-            }
-        }
-
-
-        // Step 3: Password authentication
-        int passwordAttempts = 3;
-
-        while (passwordAttempts > 0) {
-            System.out.print("Enter Password: ");
-            String password = sc.nextLine().trim();
-
-            String name = LoginService.authenticate(email, password, role);
-
-            if (name != null) {
-                System.out.println("✅ Login Successful! Welcome, " + name + " (" + role.name() + ")");
-                launchDashboard(role, email);
-                return;
-            } else {
-                passwordAttempts--;
-                System.out.println("❌ Incorrect password.");
-                if (passwordAttempts > 0) {
-                    System.out.println("🔁 Attempts remaining: " + passwordAttempts);
-                } else {
-                    System.out.println("🚫 Too many failed attempts. Returning to main menu.");
-                }
+                System.out.println("🚫 Too many failed attempts. Returning to main menu.");
             }
         }
     }
+}
 
 
     /**
