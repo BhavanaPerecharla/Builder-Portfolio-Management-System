@@ -1,9 +1,11 @@
 package org.example.UI;
 
+import java.io.Console;
 import java.util.Scanner;
 
+import org.example.Model.UserRoleInfo;
 import org.example.Service.LoginService;
-
+import org.example.Util.PasswordUtil;
 
 import org.example.Constants.Role;
 
@@ -45,6 +47,7 @@ public class LoginUI {
         }
     }
 
+
     /**
      * Handles the login process:
      * 1. Role selection and validation.
@@ -56,39 +59,49 @@ public class LoginUI {
      */
 
     public static void performLogin(Scanner sc) {
-    System.out.println("\n🔐===== Login =====");
+        System.out.println("\n🔐===== Login =====");
 
-    System.out.print("Enter Email: ");
-    String email = sc.nextLine().trim();
+        System.out.print("Enter Email: ");
+        String email = sc.nextLine().trim();
 
-    UserRoleInfo userInfo = LoginService.findUserByEmail(email);
+        UserRoleInfo userInfo = LoginService.findUserByEmail(email);
 
-    if (userInfo == null) {
-        System.out.println("❌ No account found with this email.");
-        return;
-    }
-
-    // Step 2: Password authentication
-    int passwordAttempts = 3;
-    while (passwordAttempts > 0) {
-        System.out.print("Enter Password: ");
-        String inputPassword = sc.nextLine().trim();
-
-        if (PasswordManager.verifyPassword(inputPassword, userInfo.getPassword())) {
-            System.out.println("✅ Login Successful! Welcome, " + userInfo.getName() + " (" + userInfo.getRole().name() + ")");
-            launchDashboard(userInfo.getRole(), email);
+        if (userInfo == null) {
+            System.out.println("❌ No account found with this email.");
             return;
-        } else {
-            passwordAttempts--;
-            System.out.println("❌ Incorrect password.");
-            if (passwordAttempts > 0) {
-                System.out.println("🔁 Attempts remaining: " + passwordAttempts);
+        }
+
+        Console console = System.console();
+        int passwordAttempts = 3;
+
+        while (passwordAttempts > 0) {
+            String inputPassword;
+
+            if (console != null) {
+                char[] passwordChars = console.readPassword("Enter Password: ");
+                inputPassword = new String(passwordChars).trim();
             } else {
-                System.out.println("🚫 Too many failed attempts. Returning to main menu.");
+                // IDE fallback
+                System.out.print("Enter Password (⚠ visible due to IDE limitations): ");
+                inputPassword = sc.nextLine().trim();
+            }
+
+            if (PasswordUtil.verifyPassword(inputPassword, userInfo.getPassword())) {
+                System.out.println("✅ Login Successful! Welcome, " + userInfo.getName() + " (" + userInfo.getRole().name() + ")");
+                launchDashboard(userInfo.getRole(), email);
+                return;
+            } else {
+                passwordAttempts--;
+                System.out.println("❌ Incorrect password.");
+                if (passwordAttempts > 0) {
+                    System.out.println("🔁 Attempts remaining: " + passwordAttempts);
+                } else {
+                    System.out.println("🚫 Too many failed attempts. Returning to main menu.");
+                }
             }
         }
     }
-}
+
 
 
     /**
