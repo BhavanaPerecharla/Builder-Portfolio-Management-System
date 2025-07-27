@@ -139,62 +139,64 @@ public class AdminService {
     }
 
     // Allows the admin to edit their profile details-including name, contact, email, and address
-    public static void editProfile(String email) {
-        try {
-            Admin admin = AdminRepository.getAdminByEmail(email);
-            if (admin == null) {
-                System.out.println("❌ Admin not found.");
-                return;
-            }
-
-            Address address = AddressRepository.getAddressById(admin.getAddressId());
-            if (address == null) {
-                address = new Address();
-                address.setAddressId(admin.getAddressId());
-            }
-
-            while (true) {
-                System.out.println("\n🛠️===== Edit Profile =====");
-                System.out.println("[1] Edit Name");
-                System.out.println("[2] Edit Contact");
-                System.out.println("[3] Edit Email");
-                System.out.println("[4] Edit Address");
-                System.out.println("[0] Back to Dashboard");
-                System.out.print("👉 Enter your choice: ");
-                String choice = sc.nextLine().trim();
-
-                switch (choice) {
-                    case "1":
-                        admin.setAdminName(promptNonEmpty(sc, "Enter new name"));
-                        System.out.println("✅ Name updated successfully.");
-                        break;
-                    case "2":
-                        admin.setAdminContact(promptValidContact(sc, "Enter new contact number"));
-                        System.out.println("✅ Contact updated successfully.");
-                        break;
-                    case "3":
-                        admin.setAdminEmail(promptNonEmpty(sc, "Enter new email"));
-                        System.out.println("✅ Email updated successfully.");
-                        break;
-                    case "4":
-                        AddressEditor.editAddress(sc, address);
-                        break;
-                    case "0":
-
-                        if (AdminRepository.updateAdmin(admin, address)) {
-                            System.out.println("✅ Profile updated successfully!");
-                        } else {
-                            System.out.println("❌ Failed to update profile.");
-                        }
-                        return;
-                    default:
-                        System.out.println("❌ Invalid choice.");
-                }
-            }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error editing admin profile", e);
+    public static String editProfileAndReturnUpdatedEmail(String email) {
+    try {
+        Admin admin = AdminRepository.getAdminByEmail(email);
+        if (admin == null) {
+            System.out.println("❌ Admin not found.");
+            return null;
         }
+
+        Address address = AddressRepository.getAddressById(admin.getAddressId());
+        if (address == null) {
+            address = new Address();
+            address.setAddressId(admin.getAddressId());
+        }
+
+        while (true) {
+            System.out.println("\n🛠️===== Edit Profile =====");
+            System.out.println("[1] Edit Name");
+            System.out.println("[2] Edit Contact");
+            System.out.println("[3] Edit Email");
+            System.out.println("[4] Edit Address");
+            System.out.println("[0] Back to Dashboard");
+            System.out.print("👉 Enter your choice: ");
+            String choice = sc.nextLine().trim();
+
+            switch (choice) {
+                case "1":
+                    admin.setAdminName(promptNonEmpty(sc, "Enter new name"));
+                    System.out.println("✅ Name updated successfully.");
+                    break;
+                case "2":
+                    admin.setAdminContact(promptValidContact(sc, "Enter new contact number"));
+                    System.out.println("✅ Contact updated successfully.");
+                    break;
+                case "3":
+                    admin.setAdminEmail(promptNonEmpty(sc, "Enter new email"));
+                    System.out.println("✅ Email updated successfully.");
+                    break;
+                case "4":
+                    AddressEditor.editAddress(sc, address);
+                    break;
+                case "0":
+                    if (AdminRepository.updateAdmin(admin, address)) {
+                        System.out.println("✅ Profile updated successfully!");
+                    } else {
+                        System.out.println("❌ Failed to update profile.");
+                    }
+                    return admin.getAdminEmail(); // return updated email
+                default:
+                    System.out.println("❌ Invalid choice.");
+            }
+        }
+    } catch (Exception e) {
+        logger.log(Level.SEVERE, "Error editing admin profile", e);
+        return null;
     }
+}
+
+                     
 
     // Allows the admin to change their password securely
     public static void changePassword(String email) {
