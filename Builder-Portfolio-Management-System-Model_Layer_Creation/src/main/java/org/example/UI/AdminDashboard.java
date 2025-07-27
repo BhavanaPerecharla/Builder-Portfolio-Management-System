@@ -27,8 +27,11 @@ public class AdminDashboard {
                     AdminService.viewProfile(email);   // View admin profile
                     break;
                 case "2":
-                    AdminService.editProfile(email);   // Edit admin profile
-                    break;
+                     String updatedEmail = AdminService.editProfileAndReturnUpdatedEmail(email);
+                     if (updatedEmail != null) {
+                         email = updatedEmail; // update the email used in session
+                      }
+                      break;
                 case "3":
                     AdminService.changePassword(email);  // Change admin password
                     break;
