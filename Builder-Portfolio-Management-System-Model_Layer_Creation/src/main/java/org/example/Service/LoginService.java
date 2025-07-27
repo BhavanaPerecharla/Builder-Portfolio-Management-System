@@ -1,6 +1,11 @@
 package org.example.Service;
 
 
+import org.example.Model.*;
+import org.example.Repository.AdminRepository;
+import org.example.Repository.BuilderRepository;
+import org.example.Repository.ClientRepository;
+import org.example.Repository.ManagerRepository;
 import org.example.Util.DBConnection;
 import org.example.Util.PasswordUtil;
 import org.example.Constants.Role;
@@ -85,4 +90,29 @@ public class LoginService {
 
         return null;// Authentication failed
     }
+
+    public static UserRoleInfo findUserByEmail(String email) {
+        Admin admin = AdminRepository.getAdminByEmail(email);
+        if (admin != null) {
+            return new UserRoleInfo(Role.ADMIN, admin.getAdminName(), admin.getAdminPassword());
+        }
+
+        Builder builder = BuilderRepository.getBuilderByEmail(email);
+        if (builder != null) {
+            return new UserRoleInfo(Role.BUILDER, builder.getBuilderName(), builder.getBuilderPassword());
+        }
+
+        Client client = ClientRepository.getClientByEmail(email);
+        if (client != null) {
+            return new UserRoleInfo(Role.CLIENT, client.getClientName(), client.getClientPassword());
+        }
+
+        Manager manager = ManagerRepository.getManagerByEmail(email);
+        if (manager != null) {
+            return new UserRoleInfo(Role.MANAGER, manager.getManagerName(), manager.getManagerPassword());
+        }
+
+        return null; // Not found
+    }
+
 }
